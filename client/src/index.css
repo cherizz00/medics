@@ -1,28 +1,57 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
+  /* Premium Palette */
   --apollo-blue: #02363D;
   --apollo-teal: #024751;
+  --apollo-dark: #001E22;
+
+  /* Vibrant Accents */
   --apollo-orange: #FF9500;
   --apollo-orange-deep: #E68600;
-  --apollo-bg: #F8FAFB;
+  --apollo-orange-soft: #FFB340;
+
+  /* Surfaces */
+  --apollo-bg: #F2F4F6;
+  /* Slightly cooler grey */
   --apollo-white: #FFFFFF;
-  --apollo-text-dark: #1A1C1E;
-  --apollo-text-light: #6C7278;
-  --apollo-border: rgba(0, 0, 0, 0.05);
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.4);
+  --apollo-surface: #FFFFFF;
 
-  --primary-gradient: linear-gradient(135deg, #02363D 0%, #024751 100%);
-  --accent-gradient: linear-gradient(135deg, #FFB84D 0%, #FF9500 100%);
-  --mesh-gradient: radial-gradient(at 0% 0%, hsla(186, 100%, 12%, 0.05) 0, transparent 50%),
-    radial-gradient(at 50% 0%, hsla(35, 100%, 50%, 0.05) 0, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(186, 100%, 12%, 0.05) 0, transparent 50%);
+  /* Text */
+  --apollo-text-dark: #11181C;
+  --apollo-text-medium: #687076;
+  --apollo-text-light: #889096;
 
-  --shadow-premium: 0 20px 40px -10px rgba(2, 54, 61, 0.1);
-  --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.04);
+  /* Borders & Glass */
+  --apollo-border: rgba(0, 0, 0, 0.06);
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-highlight: rgba(255, 255, 255, 0.8);
 
-  --transition-premium: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  /* Rich Gradients */
+  --primary-gradient: linear-gradient(145deg, #02363D 0%, #03525E 100%);
+  --accent-gradient: linear-gradient(135deg, #FFB84D 0%, #FF9500 50%, #E68600 100%);
+  --mesh-gradient:
+    radial-gradient(at 0% 0%, hsla(186, 100%, 15%, 0.08) 0, transparent 40%),
+    radial-gradient(at 100% 0%, hsla(35, 100%, 50%, 0.08) 0, transparent 40%),
+    radial-gradient(at 50% 120%, hsla(186, 100%, 15%, 0.05) 0, transparent 50%);
+
+  /* Depth */
+  --shadow-premium:
+    0 20px 40px -12px rgba(2, 54, 61, 0.15),
+    0 0 1px rgba(0, 0, 0, 0.05);
+  /* Crisp edge */
+
+  --shadow-soft:
+    0 2px 8px -2px rgba(0, 0, 0, 0.05),
+    0 12px 24px -8px rgba(0, 0, 0, 0.08),
+    0 0 1px rgba(0, 0, 0, 0.05);
+
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+
+  /* Physics */
+  --transition-premium: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 * {
@@ -31,9 +60,7 @@
   box-sizing: border-box;
   font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
-  /* Remove mobile tap highlight */
   -webkit-touch-callout: none;
-  /* Disable native callouts */
 }
 
 html,
@@ -41,100 +68,148 @@ body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  /* Prevent body bounce/overscroll */
   overscroll-behavior-y: none;
   position: fixed;
-  /* Lock body position */
-}
-
-body {
   background-color: var(--apollo-bg);
   color: var(--apollo-text-dark);
   -webkit-font-smoothing: antialiased;
-  user-select: none;
-  /* Disable text selection globally */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Allow selection only in specific fields */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  user-select: none;
+}
+
+/* Typography Polish */
+h1,
+h2,
+h3,
+h4,
+h5 {
+  letter-spacing: -0.02em;
+  /* Tighter headings */
+  color: var(--apollo-blue);
+}
+
+p,
+span,
+div {
+  letter-spacing: -0.01em;
+}
+
 input,
 textarea,
 [contenteditable] {
   user-select: text;
 }
 
+/* Premium Card */
 .premium-card {
-  background: var(--apollo-white);
-  border-radius: 24px;
+  background: var(--apollo-surface);
+  border-radius: 28px;
+  /* More modern roundness */
   box-shadow: var(--shadow-soft);
-  border: 1px solid var(--apollo-border);
-  transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: var(--transition-premium);
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-card::before {
+  /* Subtle sheen */
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  opacity: 0.6;
 }
 
 .premium-card:active {
-  transform: scale(0.98);
-  box-shadow: var(--shadow-soft);
+  transform: scale(0.97);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  opacity: 0.95;
 }
 
+/* Glassmorphism 2.0 */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px) saturate(120%);
+  -webkit-backdrop-filter: blur(30px) saturate(120%);
   border: 1px solid var(--glass-border);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 var(--glass-highlight);
 }
 
+/* Buttons */
 button.apollo-btn {
   background: var(--accent-gradient);
   color: white;
-  border-radius: 16px;
-  padding: 16px 32px;
-  font-weight: 600;
+  border-radius: 20px;
+  padding: 18px 32px;
+  font-weight: 700;
   border: none;
   cursor: pointer;
-  transition: transform 0.1s ease;
+  transition: var(--transition-spring);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 8px 20px -6px rgba(255, 149, 0, 0.4);
+  box-shadow: 0 12px 24px -8px rgba(255, 149, 0, 0.5);
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
 }
 
 button.apollo-btn:active {
-  transform: scale(0.96);
-  opacity: 0.9;
+  transform: scale(0.92);
+  box-shadow: 0 4px 12px -4px rgba(255, 149, 0, 0.3);
 }
 
+/* Inputs */
 input.apollo-input {
   width: 100%;
-  padding: 18px 20px;
-  border: 1.5px solid var(--apollo-border);
-  border-radius: 16px;
+  padding: 20px 24px;
+  border: 1px solid var(--apollo-border);
+  border-radius: 20px;
   font-size: 16px;
   background: white;
   transition: var(--transition-premium);
   color: var(--apollo-text-dark);
+  font-weight: 500;
+  box-shadow: var(--shadow-inner);
 }
 
 input.apollo-input:focus {
   border-color: var(--apollo-orange);
   background: white;
   outline: none;
-  box-shadow: 0 0 0 4px rgba(255, 149, 0, 0.1);
+  box-shadow: 0 0 0 4px rgba(255, 149, 0, 0.12);
 }
 
+input.apollo-input::placeholder {
+  color: var(--apollo-text-light);
+  font-weight: 400;
+}
+
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(15px) scale(0.98);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .animate-fade {
-  animation: fadeIn 0.6s ease-out forwards;
+  animation: fadeIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  /* Smoother curve */
 }
