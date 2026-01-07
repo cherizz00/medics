@@ -148,7 +148,7 @@ const Dashboard = ({ onNavigate, documents, onAdd }) => {
                 .search-inner input::placeholder { color: rgba(255,255,255,0.5); }
                 .search-inner span { font-size: 20px; }
 
-                .dash-main-p { flex: 1; overflow-y: auto; padding: 0 24px; padding-bottom: 140px; margin-top: -35px; position: relative; z-index: 10; -webkit-overflow-scrolling: touch; }
+                .dash-main-p { flex: 1; overflow-y: auto; padding: 0 24px; padding-bottom: 180px; margin-top: -35px; position: relative; z-index: 10; -webkit-overflow-scrolling: touch; }
                 .dash-main-p::-webkit-scrollbar { display: none; }
                 .section-p { margin-bottom: 32px; }
                 .s-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }

@@ -114,7 +114,7 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate }) => {
         .r-back { background: none; border: none; font-size: 26px; cursor: pointer; color: var(--apollo-blue); display: flex; align-items: center; }
         .r-add-btn { width: 36px; height: 36px; background: var(--apollo-orange); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; font-weight: 600; }
 
-        .records-body-p { flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 140px; scrollbar-width: none; position: relative; z-index: 1; -webkit-overflow-scrolling: touch; }
+        .records-body-p { flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 180px; scrollbar-width: none; position: relative; z-index: 1; -webkit-overflow-scrolling: touch; }
         .records-body-p::-webkit-scrollbar { display: none; }
         
         .search-bar-p { margin-bottom: 24px; }

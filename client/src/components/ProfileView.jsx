@@ -118,7 +118,7 @@ const ProfileView = ({ onBack, onNavigate }) => {
         .p-back { background: none; border: none; font-size: 26px; cursor: pointer; color: var(--apollo-blue); display: flex; align-items: center; }
         .p-bell { font-size: 20px; }
 
-        .p-scroll-area { flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 140px; scrollbar-width: none; position: relative; z-index: 1; -webkit-overflow-scrolling: touch; }
+        .p-scroll-area { flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 180px; scrollbar-width: none; position: relative; z-index: 1; -webkit-overflow-scrolling: touch; }
         .p-scroll-area::-webkit-scrollbar { display: none; }
         
         .u-card-p { padding: 24px; background: white; border-radius: 32px; margin-bottom: 24px; }
