@@ -12,7 +12,7 @@ const LoginView = ({ onLogin, onNavigate }) => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/login', {
+            const response = await fetch('http://127.0.0.1:5000/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phoneNumber, password }),
@@ -114,43 +114,6 @@ const LoginView = ({ onLogin, onNavigate }) => {
                     </div>
                 </div>
             </div>
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-        .login-root-p { height: 100vh; background: var(--apollo-bg); display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: hidden; }
-        .mesh-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--mesh-gradient); z-index: 0; pointer-events: none; }
-        .bg-decor { position: absolute; width: 100%; height: 100%; z-index: 0; }
-        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; }
-        .blob-1 { width: 300px; height: 300px; background: var(--apollo-orange); top: -50px; left: -50px; }
-        .blob-2 { width: 400px; height: 400px; background: var(--apollo-blue); bottom: -100px; right: -100px; }
-        
-        .login-panel { width: 100%; max-width: 450px; padding: 48px 32px; border-radius: 32px; z-index: 10; position: relative; border: 1px solid var(--apollo-border); }
-        .login-header-p { text-align: center; margin-bottom: 40px; }
-        .mini-logo { margin-bottom: 20px; display: flex; justify-content: center; }
-        .login-header-p h1 { font-size: 32px; font-weight: 800; color: var(--apollo-blue); margin-bottom: 8px; letter-spacing: -1px; }
-        .login-header-p p { color: var(--apollo-text-light); font-size: 16px; }
-        
-        .input-p { margin-bottom: 24px; }
-        .input-p label { display: block; font-size: 13px; font-weight: 700; color: var(--apollo-blue); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-        .input-wrapper-p { display: flex; align-items: center; background: white; border-radius: 16px; border: 1.5px solid var(--apollo-border); }
-        .cc { padding: 0 16px; font-weight: 800; border-right: 1.5px solid var(--apollo-border); color: var(--apollo-blue); }
-        .input-wrapper-p input { border: none !important; box-shadow: none !important; }
-        
-        .otp-in { text-align: center; font-size: 24px; letter-spacing: 12px; font-weight: 700; height: 64px; }
-        .resend-p { margin-top: 15px; font-size: 14px; text-align: center; color: var(--apollo-text-light); }
-        .resend-p span { color: var(--apollo-orange); font-weight: 700; cursor: pointer; }
-        
-        .sign-btn { width: 100%; margin-top: 10px; font-size: 17px; height: 60px; }
-        
-        .login-social { margin-top: 40px; }
-        .sep { display: flex; align-items: center; text-align: center; color: var(--apollo-text-light); font-size: 12px; margin-bottom: 24px; }
-        .sep::before, .sep::after { content: ''; flex: 1; border-bottom: 1px solid var(--apollo-border); }
-        .sep span { padding: 0 10px; }
-        
-        .social-grid { display: flex; justify-content: center; gap: 16px; }
-        .social-icon { width: 56px; height: 56px; border-radius: 16px; background: white; display: flex; align-items: center; justify-content: center; color: var(--apollo-blue); border: 1.5px solid var(--apollo-border); cursor: pointer; transition: var(--transition-premium); }
-        .social-icon:hover { background: #F8F9FA; transform: translateY(-2px); border-color: var(--apollo-blue); }
-      `}} />
         </div>
     );
 };
