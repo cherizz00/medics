@@ -55,7 +55,7 @@ function App() {
             onAdd={addDocument}
           />
         )}
-        {currentStep === 'profile' && <ProfileView onBack={() => setCurrentStep('dashboard')} />}
+        {currentStep === 'profile' && <ProfileView onBack={() => setCurrentStep('dashboard')} onLogout={() => setCurrentStep('login')} onNavigate={(step) => setCurrentStep(step)} />}
         {currentStep === 'records' && (
           <RecordsView
             documents={documents}

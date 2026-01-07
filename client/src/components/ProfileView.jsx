@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IconHome, IconRecords, IconProfile, IconStyles, IconHospital, IconMedicine, IconLab, IconInsurance, IconQuery } from './Icons';
 
-const ProfileView = ({ onBack, onNavigate }) => {
+const ProfileView = ({ onBack, onNavigate, onLogout }) => {
     const [familyMembers, setFamilyMembers] = useState(() => {
         const saved = localStorage.getItem('medics_family');
         return saved ? JSON.parse(saved) : [
@@ -21,11 +21,18 @@ const ProfileView = ({ onBack, onNavigate }) => {
             const colors = ['#E0F2F1', '#E3F2FD', '#FFF3E0', '#F3E5F5', '#FFFDE7'];
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
             const newMember = {
+                id: Date.now(),
                 name: name,
                 color: randomColor,
                 initial: name.charAt(0).toUpperCase()
             };
             setFamilyMembers([...familyMembers, newMember]);
+        }
+    };
+
+    const handleDeleteMember = (indexToRemove) => {
+        if (window.confirm("Remove this family member?")) {
+            setFamilyMembers(familyMembers.filter((_, index) => index !== indexToRemove));
         }
     };
 
@@ -76,7 +83,7 @@ const ProfileView = ({ onBack, onNavigate }) => {
                             <span>Add</span>
                         </div>
                         {familyMembers.map((m, i) => (
-                            <div key={i} className="f-member-p">
+                            <div key={i} className="f-member-p" onContextMenu={(e) => { e.preventDefault(); handleDeleteMember(i); }} onClick={() => handleDeleteMember(i)}>
                                 <div className="f-av-p" style={{ background: m.color }}>{m.initial}</div>
                                 <span>{m.name}</span>
                             </div>
@@ -104,7 +111,7 @@ const ProfileView = ({ onBack, onNavigate }) => {
                             <span className="m-chevron">&rsaquo;</span>
                         </div>
                     ))}
-                    <button className="logout-btn-p">Log Out</button>
+                    <button className="logout-btn-p" onClick={onLogout}>Log Out</button>
                 </div>
             </div>
 
