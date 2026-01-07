@@ -132,7 +132,7 @@ const Dashboard = ({ onNavigate, documents, onAdd }) => {
                     color: white; 
                     border-radius: 0 0 40px 40px; 
                     position: relative;
-                    z-index: 5;
+                    z-index: 20;
                     box-shadow: 0 10px 30px rgba(2, 54, 61, 0.2);
                 }
                 .h-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
@@ -148,7 +148,7 @@ const Dashboard = ({ onNavigate, documents, onAdd }) => {
                 .search-inner input::placeholder { color: rgba(255,255,255,0.5); }
                 .search-inner span { font-size: 20px; }
 
-                .dash-main-p { flex: 1; overflow-y: auto; padding: 10px 24px; padding-bottom: 180px; margin-top: 0; position: relative; z-index: 10; -webkit-overflow-scrolling: touch; }
+                .dash-main-p { flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 180px; margin-top: 0; position: relative; z-index: 10; -webkit-overflow-scrolling: touch; }
                 .dash-main-p::-webkit-scrollbar { display: none; }
                 .section-p { margin-bottom: 32px; }
                 .s-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
