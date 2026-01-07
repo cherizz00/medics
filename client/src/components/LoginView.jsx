@@ -1,16 +1,36 @@
 import React, { useState } from 'react';
 
-const LoginView = ({ onLogin }) => {
+const LoginView = ({ onLogin, onNavigate }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [isOtpStep, setIsOtpStep] = useState(false);
-    const [otp, setOtp] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!isOtpStep) {
-            setIsOtpStep(true);
-        } else if (otp === '1234') {
-            onLogin();
+        setIsLoading(true);
+        setError('');
+
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phoneNumber, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('medics_token', data.token);
+                localStorage.setItem('medics_user', JSON.stringify(data.user));
+                onLogin(data.user);
+            } else {
+                setError(data.message || 'Login failed');
+            }
+        } catch (err) {
+            setError('Network error. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -40,39 +60,43 @@ const LoginView = ({ onLogin }) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="login-form-p">
-                    {!isOtpStep ? (
-                        <div className="input-p">
-                            <label>Phone Number</label>
-                            <div className="input-wrapper-p">
-                                <span className="cc">+91</span>
-                                <input
-                                    type="tel"
-                                    value={phoneNumber}
-                                    onChange={(e) => setPhoneNumber(e.target.value)}
-                                    placeholder="Enter 10 digits"
-                                    maxLength="10"
-                                    className="apollo-input"
-                                />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="input-p">
-                            <label>Verification Code</label>
-                            <input
-                                type="text"
-                                className="apollo-input otp-in"
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                placeholder="0000"
-                                maxLength="4"
-                            />
-                            <div className="resend-p">Didn't receive code? <span>Resend OTP</span></div>
-                        </div>
-                    )}
+                    {error && <div style={{ color: '#FF5252', marginBottom: '15px', textAlign: 'center', fontSize: '14px' }}>{error}</div>}
 
-                    <button type="submit" className="apollo-btn sign-btn">
-                        {isOtpStep ? 'Verify Account' : 'Request OTP'}
+                    <div className="input-p">
+                        <label>Phone Number</label>
+                        <div className="input-wrapper-p">
+                            <span className="cc">+91</span>
+                            <input
+                                type="tel"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                placeholder="Enter 10 digits"
+                                maxLength="10"
+                                className="apollo-input"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="input-p">
+                        <label>Password</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter password"
+                            className="apollo-input"
+                            required
+                        />
+                    </div>
+
+                    <button type="submit" className="apollo-btn sign-btn" disabled={isLoading}>
+                        {isLoading ? 'Logging In...' : 'Log In'}
                     </button>
+
+                    <div className="resend-p" style={{ marginTop: '20px' }}>
+                        New to Medics? <span onClick={() => onNavigate('signup')}>Create Account</span>
+                    </div>
                 </form>
 
                 <div className="login-social">

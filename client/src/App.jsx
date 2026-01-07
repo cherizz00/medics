@@ -3,6 +3,7 @@ import './App.css';
 import SplashScreen from './components/SplashScreen';
 import OnboardingFlow from './components/OnboardingFlow';
 import LoginView from './components/LoginView';
+import SignUpView from './components/SignUpView';
 import Dashboard from './components/Dashboard';
 import ProfileView from './components/ProfileView';
 import RecordsView from './components/RecordsView';
@@ -30,7 +31,11 @@ function App() {
   };
 
   useEffect(() => {
-    if (currentStep === 'splash') {
+    // Check for auto-login
+    const token = localStorage.getItem('medics_token');
+    if (token) {
+      setCurrentStep('dashboard');
+    } else if (currentStep === 'splash') {
       const timer = setTimeout(() => setCurrentStep('onboarding'), 3000);
       return () => clearTimeout(timer);
     }
@@ -45,7 +50,10 @@ function App() {
         {currentStep === 'onboarding' && <OnboardingFlow onComplete={() => setCurrentStep('login')} />}
       </div>
       <div className={`step-wrapper ${currentStep === 'login' ? 'active' : ''}`}>
-        {currentStep === 'login' && <LoginView onLogin={() => setCurrentStep('dashboard')} />}
+        {currentStep === 'login' && <LoginView onLogin={(user) => setCurrentStep('dashboard')} onNavigate={(step) => setCurrentStep(step)} />}
+      </div>
+      <div className={`step-wrapper ${currentStep === 'signup' ? 'active' : ''}`}>
+        {currentStep === 'signup' && <SignUpView onSignUp={(user) => setCurrentStep('dashboard')} onNavigate={(step) => setCurrentStep(step)} />}
       </div>
       <div className={`step-wrapper ${['dashboard', 'profile', 'records'].includes(currentStep) ? 'active' : ''}`}>
         {currentStep === 'dashboard' && (
