@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { IconHome, IconRecords, IconProfile, IconHospital, IconMedicine, IconLab, IconInsurance, IconQuery, IconStyles } from './Icons';
 
-const Dashboard = ({ onNavigate, documents, onAdd }) => {
+const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
     const [activeTab, setActiveTab] = useState('home');
     const fileInputRef = useRef(null);
+
+    const userName = user ? user.name : 'Guest User';
+    const userInitials = user ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'G';
 
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -53,9 +56,9 @@ const Dashboard = ({ onNavigate, documents, onAdd }) => {
                 <div className="h-user" onClick={() => onNavigate('profile')}>
                     <div className="u-text">
                         <p>Welcome back,</p>
-                        <h3>John Smith</h3>
+                        <h3>{userName}</h3>
                     </div>
-                    <div className="u-avatar-p">JS</div>
+                    <div className="u-avatar-p">{userInitials}</div>
                 </div>
 
                 <div className="search-premium animate-fade">

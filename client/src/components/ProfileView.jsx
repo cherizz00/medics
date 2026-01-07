@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { IconHome, IconRecords, IconProfile, IconStyles, IconHospital, IconMedicine, IconLab, IconInsurance, IconQuery } from './Icons';
 
-const ProfileView = ({ onBack, onNavigate, onLogout }) => {
+const ProfileView = ({ onBack, onNavigate, onLogout, user }) => {
+    const userName = user ? user.name : 'Guest User';
+    const userPhone = user ? user.phoneNumber : '';
+    const userInitials = user ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'G';
+
     const [familyMembers, setFamilyMembers] = useState(() => {
         const saved = localStorage.getItem('medics_family');
         return saved ? JSON.parse(saved) : [
@@ -57,10 +61,10 @@ const ProfileView = ({ onBack, onNavigate, onLogout }) => {
             <div className="p-scroll-area">
                 <div className="premium-card u-card-p animate-fade" style={{ animationDelay: '0.1s' }}>
                     <div className="u-top-p">
-                        <div className="u-big-av">JS</div>
+                        <div className="u-big-av">{userInitials}</div>
                         <div className="u-meta">
-                            <h3>John Smith</h3>
-                            <p>+91 91234 56789</p>
+                            <h3>{userName}</h3>
+                            <p>{userPhone && `+91 ${userPhone}`}</p>
                             <span className="uhid-p">UHID: APJ1.0019111579</span>
                         </div>
                         <div className="membership-star">circle</div>

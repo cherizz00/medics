@@ -19,7 +19,14 @@ const SignUpView = ({ onSignUp, onNavigate }) => {
                 body: JSON.stringify({ name, phoneNumber, password }),
             });
 
-            const data = await response.json();
+            let data;
+            const text = await response.text();
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error('SERVER RESPONSE WAS NOT JSON:', text);
+                throw new Error('Server returned HTML instead of JSON. Check console for details.');
+            }
 
             if (response.ok) {
                 localStorage.setItem('medics_token', data.token);
@@ -29,7 +36,8 @@ const SignUpView = ({ onSignUp, onNavigate }) => {
                 setError(data.message || 'Registration failed');
             }
         } catch (err) {
-            setError('Network error. Please try again.');
+            console.error('Sign Up Error:', err);
+            setError(`Network error: ${err.message}. Ensure server is running.`);
         } finally {
             setIsLoading(false);
         }

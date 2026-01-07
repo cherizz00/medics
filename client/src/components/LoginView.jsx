@@ -28,7 +28,8 @@ const LoginView = ({ onLogin, onNavigate }) => {
                 setError(data.message || 'Login failed');
             }
         } catch (err) {
-            setError('Network error. Please try again.');
+            console.error('Login Error:', err);
+            setError(`Network error: ${err.message}. Ensure server is running.`);
         } finally {
             setIsLoading(false);
         }

@@ -10,6 +10,10 @@ import RecordsView from './components/RecordsView';
 
 function App() {
   const [currentStep, setCurrentStep] = useState('splash'); // splash, onboarding, login, dashboard, profile, records
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('medics_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [documents, setDocuments] = useState(() => {
     const saved = localStorage.getItem('medics_docs');
     return saved ? JSON.parse(saved) : [
@@ -33,13 +37,25 @@ function App() {
   useEffect(() => {
     // Check for auto-login
     const token = localStorage.getItem('medics_token');
-    if (token) {
+    if (token && user) {
       setCurrentStep('dashboard');
     } else if (currentStep === 'splash') {
       const timer = setTimeout(() => setCurrentStep('onboarding'), 3000);
       return () => clearTimeout(timer);
     }
-  }, [currentStep]);
+  }, [currentStep, user]);
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+    setCurrentStep('dashboard');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('medics_token');
+    localStorage.removeItem('medics_user');
+    setUser(null);
+    setCurrentStep('login');
+  };
 
   return (
     <div className="App native-container">
@@ -50,20 +66,21 @@ function App() {
         {currentStep === 'onboarding' && <OnboardingFlow onComplete={() => setCurrentStep('login')} />}
       </div>
       <div className={`step-wrapper ${currentStep === 'login' ? 'active' : ''}`}>
-        {currentStep === 'login' && <LoginView onLogin={(user) => setCurrentStep('dashboard')} onNavigate={(step) => setCurrentStep(step)} />}
+        {currentStep === 'login' && <LoginView onLogin={handleLogin} onNavigate={(step) => setCurrentStep(step)} />}
       </div>
       <div className={`step-wrapper ${currentStep === 'signup' ? 'active' : ''}`}>
-        {currentStep === 'signup' && <SignUpView onSignUp={(user) => setCurrentStep('dashboard')} onNavigate={(step) => setCurrentStep(step)} />}
+        {currentStep === 'signup' && <SignUpView onSignUp={handleLogin} onNavigate={(step) => setCurrentStep(step)} />}
       </div>
       <div className={`step-wrapper ${['dashboard', 'profile', 'records'].includes(currentStep) ? 'active' : ''}`}>
         {currentStep === 'dashboard' && (
           <Dashboard
+            user={user}
             documents={documents.slice(0, 3)}
             onNavigate={(step) => setCurrentStep(step)}
             onAdd={addDocument}
           />
         )}
-        {currentStep === 'profile' && <ProfileView onBack={() => setCurrentStep('dashboard')} onLogout={() => setCurrentStep('login')} onNavigate={(step) => setCurrentStep(step)} />}
+        {currentStep === 'profile' && <ProfileView user={user} onBack={() => setCurrentStep('dashboard')} onLogout={handleLogout} onNavigate={(step) => setCurrentStep(step)} />}
         {currentStep === 'records' && (
           <RecordsView
             documents={documents}
