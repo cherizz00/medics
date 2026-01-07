@@ -106,7 +106,7 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate }) => {
 
             <style dangerouslySetInnerHTML={{
                 __html: `
-        .records-root-p { height: 100vh; background: var(--apollo-bg); min-height: 100vh; padding-bottom: 140px; overflow-y: auto; overflow-x: hidden; position: relative; }
+        .records-root-p { height: 100vh; background: var(--apollo-bg); display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .mesh-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--mesh-gradient); z-index: 0; pointer-events: none; }
         
         .records-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 24px; z-index: 100; border-radius: 0 0 24px 24px; background: rgba(255,255,255,0.8); }
@@ -114,7 +114,7 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate }) => {
         .r-back { background: none; border: none; font-size: 26px; cursor: pointer; color: var(--apollo-blue); display: flex; align-items: center; }
         .r-add-btn { width: 36px; height: 36px; background: var(--apollo-orange); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; font-weight: 600; }
 
-        .records-body-p { flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 110px; scrollbar-width: none; position: relative; z-index: 1; }
+        .records-body-p { flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 140px; scrollbar-width: none; position: relative; z-index: 1; -webkit-overflow-scrolling: touch; }
         .records-body-p::-webkit-scrollbar { display: none; }
         
         .search-bar-p { margin-bottom: 24px; }

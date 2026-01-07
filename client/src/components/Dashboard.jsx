@@ -68,22 +68,8 @@ const Dashboard = ({ onNavigate, documents, onAdd }) => {
 
             <main className="dash-main-p">
                 <div className="mesh-bg"></div>
-                <section className="section-p animate-fade" style={{ animationDelay: '0.2s' }}>
-                    <div className="s-head">
-                        <h3>Our Services</h3>
-                        <span>View All &rsaquo;</span>
-                    </div>
-                    <div className="s-grid-p">
-                        {services.map((s, i) => (
-                            <div key={i} className="s-item-p" onClick={() => s.title === 'Records' ? onNavigate('records') : null}>
-                                <div className="s-icon-p" style={{ background: s.color }}>{s.icon}</div>
-                                <span>{s.title}</span>
-                            </div>
-                        ))}
-                    </div>
-                </section>
 
-                <section className="upload-block-p animate-fade" style={{ animationDelay: '0.3s' }} onClick={() => fileInputRef.current.click()}>
+                <section className="upload-block-p animate-fade" style={{ animationDelay: '0.2s' }} onClick={() => fileInputRef.current.click()}>
                     <div className="u-block-inner glass">
                         <div className="u-icon-p">📄</div>
                         <div className="u-text-p">
@@ -94,7 +80,7 @@ const Dashboard = ({ onNavigate, documents, onAdd }) => {
                     </div>
                 </section>
 
-                <section className="section-p animate-fade" style={{ animationDelay: '0.4s' }}>
+                <section className="section-p animate-fade" style={{ animationDelay: '0.3s' }}>
                     <div className="s-head">
                         <h3>Medical Records</h3>
                         <span onClick={() => onNavigate('records')}>See All</span>
@@ -137,10 +123,10 @@ const Dashboard = ({ onNavigate, documents, onAdd }) => {
 
             <style dangerouslySetInnerHTML={{
                 __html: `
-                .dash-root-p { background: var(--apollo-bg); min-height: 100vh; padding-bottom: 140px; overflow-y: auto; overflow-x: hidden; position: relative; }
+                .dash-root-p { background: var(--apollo-bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative; }
                 .mesh-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--mesh-gradient); z-index: 0; pointer-events: none; }
                 
-                .premium-header { 
+                .premium-header { flex-shrink: 0;
                     background: var(--primary-gradient); 
                     padding: 30px 24px 70px 24px; 
                     color: white; 
@@ -162,7 +148,8 @@ const Dashboard = ({ onNavigate, documents, onAdd }) => {
                 .search-inner input::placeholder { color: rgba(255,255,255,0.5); }
                 .search-inner span { font-size: 20px; }
 
-                .dash-main-p { padding: 0 24px; margin-top: -35px; position: relative; z-index: 10; }
+                .dash-main-p { flex: 1; overflow-y: auto; padding: 0 24px; padding-bottom: 140px; margin-top: -35px; position: relative; z-index: 10; -webkit-overflow-scrolling: touch; }
+                .dash-main-p::-webkit-scrollbar { display: none; }
                 .section-p { margin-bottom: 32px; }
                 .s-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
                 .s-head h3 { font-size: 20px; font-weight: 700; color: var(--apollo-blue); }
