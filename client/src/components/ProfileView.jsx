@@ -2,11 +2,32 @@ import React, { useState } from 'react';
 import { IconHome, IconRecords, IconProfile, IconStyles, IconHospital, IconMedicine, IconLab, IconInsurance, IconQuery } from './Icons';
 
 const ProfileView = ({ onBack, onNavigate }) => {
-    const familyMembers = [
-        { name: 'Cherry', color: '#E0F2F1', initial: 'C' },
-        { name: 'John Jr', color: '#E3F2FD', initial: 'J' },
-        { name: 'Emily', color: '#FFF3E0', initial: 'E' }
-    ];
+    const [familyMembers, setFamilyMembers] = useState(() => {
+        const saved = localStorage.getItem('medics_family');
+        return saved ? JSON.parse(saved) : [
+            { name: 'Cherry', color: '#E0F2F1', initial: 'C' },
+            { name: 'John Jr', color: '#E3F2FD', initial: 'J' },
+            { name: 'Emily', color: '#FFF3E0', initial: 'E' }
+        ];
+    });
+
+    React.useEffect(() => {
+        localStorage.setItem('medics_family', JSON.stringify(familyMembers));
+    }, [familyMembers]);
+
+    const handleAddMember = () => {
+        const name = prompt("Enter family member's name:");
+        if (name) {
+            const colors = ['#E0F2F1', '#E3F2FD', '#FFF3E0', '#F3E5F5', '#FFFDE7'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            const newMember = {
+                name: name,
+                color: randomColor,
+                initial: name.charAt(0).toUpperCase()
+            };
+            setFamilyMembers([...familyMembers, newMember]);
+        }
+    };
 
     const menuItems = [
         { icon: <IconMedicine />, title: 'Medicine Orders', subtitle: 'View status and past orders' },
@@ -50,7 +71,7 @@ const ProfileView = ({ onBack, onNavigate }) => {
                         <span>Manage</span>
                     </div>
                     <div className="f-scroll-p">
-                        <div className="f-add-p">
+                        <div className="f-add-p" onClick={handleAddMember} style={{ cursor: 'pointer' }}>
                             <div className="f-icon-add">+</div>
                             <span>Add</span>
                         </div>
