@@ -1,0 +1,8 @@
+{
+    "name": "medics-monorepo",
+    "private": true,
+    "scripts": {
+        "build": "npm run build --prefix client",
+        "install": "npm install --prefix client"
+    }
+}
