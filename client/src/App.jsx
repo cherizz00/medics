@@ -7,6 +7,8 @@ import SignUpView from './components/SignUpView';
 import Dashboard from './components/Dashboard';
 import ProfileView from './components/ProfileView';
 import RecordsView from './components/RecordsView';
+import FAQView from './components/FAQView';
+import { SharedAccessView, SecurityView, StorageView } from './components/ProfileSubViews';
 
 function App() {
   const [currentStep, setCurrentStep] = useState('splash'); // splash, onboarding, login, dashboard, profile, records
@@ -61,7 +63,13 @@ function App() {
   };
 
   return (
-    <div className="App native-container">
+    <div className="App native-container" style={{
+      position: 'relative',
+      width: '100vw',
+      height: '100vh',
+      overflow: 'hidden',
+      background: 'var(--bg-app)'
+    }}>
       <div className={`step-wrapper ${currentStep === 'splash' ? 'active' : ''}`}>
         {currentStep === 'splash' && <SplashScreen />}
       </div>
@@ -74,7 +82,7 @@ function App() {
       <div className={`step-wrapper ${currentStep === 'signup' ? 'active' : ''}`}>
         {currentStep === 'signup' && <SignUpView onSignUp={handleLogin} onNavigate={(step) => setCurrentStep(step)} />}
       </div>
-      <div className={`step-wrapper ${['dashboard', 'profile', 'records'].includes(currentStep) ? 'active' : ''}`}>
+      <div className={`step-wrapper ${['dashboard', 'profile', 'records', 'faq', 'shared', 'security', 'storage'].includes(currentStep) ? 'active' : ''}`}>
         {currentStep === 'dashboard' && (
           <Dashboard
             user={user}
@@ -94,17 +102,14 @@ function App() {
             onNavigate={(step) => setCurrentStep(step)}
           />
         )}
+        {currentStep === 'faq' && <FAQView onBack={() => setCurrentStep('profile')} />}
+        {currentStep === 'shared' && <SharedAccessView onBack={() => setCurrentStep('profile')} />}
+        {currentStep === 'security' && <SecurityView onBack={() => setCurrentStep('profile')} />}
+        {currentStep === 'storage' && <StorageView onBack={() => setCurrentStep('profile')} />}
       </div>
 
       <style dangerouslySetInnerHTML={{
         __html: `
-        .native-container {
-          position: relative;
-          width: 100vw;
-          height: 100vh;
-          overflow: hidden;
-          background: var(--apollo-bg);
-        }
         .step-wrapper {
           position: absolute;
           top: 0;
@@ -112,14 +117,10 @@ function App() {
           width: 100%;
           height: 100%;
           display: none;
-          animation: slideIn 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
         .step-wrapper.active {
           display: block;
-        }
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+          animation: fadeIn 0.4s ease-out;
         }
       `}} />
     </div>

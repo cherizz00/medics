@@ -36,65 +36,113 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
         }
     };
 
+    const IconStyles = () => null; // Icons are now global or handled via components, keeping for structure if needed but empty
 
     return (
-        <div className="dash-root-p">
-            <IconStyles />
-            <header className="premium-header">
+        <div style={{ height: '100vh', background: 'var(--bg-app)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <header className="premium-header animate-slide-up" style={{ flexShrink: 0 }}>
                 <div className="h-top">
-                    <div className="loc-p">📍 Mumbai Central</div>
-                    <div className="notif">🔔</div>
-                </div>
-                <div className="h-user" onClick={() => onNavigate('profile')}>
-                    <div className="u-text">
-                        <p>Welcome back,</p>
-                        <h3>{userName}</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-secondary)' }}>
+                        <span style={{ color: 'var(--primary)' }}>📍</span> Mumbai Central
                     </div>
-                    <div className="u-avatar-p">{userInitials}</div>
+                    <div style={{
+                        width: '40px', height: '40px', borderRadius: '50%', background: 'white',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border-light)'
+                    }}>
+                        🔔
+                    </div>
                 </div>
 
-                <div className="search-premium animate-fade">
-                    <div className="search-inner glass">
-                        <span>🔍</span>
-                        <input type="text" placeholder="Search medical services..." />
+                <div onClick={() => onNavigate('profile')} style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer',
+                    marginTop: '8px'
+                }}>
+                    <div>
+                        <p style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}>Welcome back,</p>
+                        <h3 style={{ fontSize: '1.5rem', color: 'var(--text-main)', margin: '4px 0' }}>{userName}</h3>
                     </div>
+                    <div style={{
+                        width: '56px', height: '56px', borderRadius: '20px',
+                        background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
+                        color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '1.2rem', fontWeight: '700', boxShadow: 'var(--shadow-md)'
+                    }}>
+                        {userInitials}
+                    </div>
+                </div>
+
+                <div className="input-premium" style={{
+                    display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'white'
+                }}>
+                    <span style={{ fontSize: '1.2rem', opacity: 0.6 }}>🔍</span>
+                    <input type="text" placeholder="Search medical services..." style={{
+                        border: 'none', outline: 'none', width: '100%', fontSize: '1rem', color: 'var(--text-main)'
+                    }} />
                 </div>
             </header>
 
-            <main className="dash-main-p">
+            <main style={{ flex: 1, overflowY: 'auto', padding: '24px', paddingBottom: '100px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
-                <section className="upload-block-p animate-fade" style={{ animationDelay: '0.1s' }} onClick={() => fileInputRef.current.click()}>
-                    <div className="u-block-inner glass">
-                        <div className="u-icon-p">📄</div>
-                        <div className="u-text-p">
-                            <h4>Upload Medical Records</h4>
-                            <p>Store your prescriptions and reports safely</p>
-                        </div>
-                        <div className="u-btn-p">Add +</div>
+                <section className="premium-card animate-fade" style={{
+                    background: 'linear-gradient(135deg, var(--secondary) 0%, #4338ca 100%)',
+                    color: 'white', padding: '24px', position: 'relative', overflow: 'hidden',
+                    border: 'none', flexShrink: 0
+                }} onClick={() => fileInputRef.current.click()}>
+                    <div style={{ position: 'relative', zIndex: 10 }}>
+                        <div style={{
+                            width: '48px', height: '48px', background: 'rgba(255,255,255,0.2)',
+                            borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '1.5rem', marginBottom: '16px'
+                        }}>📄</div>
+                        <h4 style={{ color: 'white', fontSize: '1.25rem', marginBottom: '4px' }}>Upload Records</h4>
+                        <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', marginBottom: '20px' }}>
+                            Securely store your prescriptions and reports
+                        </p>
+                        <button style={{
+                            background: 'white', color: 'var(--secondary)', border: 'none',
+                            padding: '10px 20px', borderRadius: 'var(--radius-full)', fontWeight: '700',
+                            fontSize: '0.9rem', cursor: 'pointer'
+                        }}>Tap to Upload +</button>
                     </div>
+                    {/* Decorative blobs */}
+                    <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}></div>
+                    <div style={{ position: 'absolute', bottom: '-40px', left: '40%', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}></div>
                 </section>
 
-
-                <section className="section-p animate-fade" style={{ animationDelay: '0.2s' }}>
-                    <div className="s-head">
-                        <h3>Medical Records</h3>
-                        <span onClick={() => onNavigate('records')}>See All</span>
+                <section className="animate-fade" style={{ animationDelay: '0.1s', flexShrink: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        <h3 style={{ fontSize: '1.25rem' }}>Medical Records</h3>
+                        <span onClick={() => onNavigate('records')} style={{
+                            color: 'var(--primary)', fontWeight: '600', fontSize: '0.9rem', cursor: 'pointer'
+                        }}>See All</span>
                     </div>
-                    <div className="r-list-p">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {documents.map((doc, i) => (
-                            <div key={i} className="r-card-p premium-card" onClick={() => openDocument(doc)}>
-                                <div className="r-icon-p">
+                            <div key={i} className="premium-card" onClick={() => openDocument(doc)} style={{
+                                padding: '16px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer'
+                            }}>
+                                <div style={{
+                                    width: '48px', height: '48px', borderRadius: '12px',
+                                    background: 'var(--primary-light)', color: 'var(--primary)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'
+                                }}>
                                     <IconRecords active={false} />
                                 </div>
-                                <div className="r-text-p">
-                                    <h4>{doc.title}</h4>
-                                    <p>{doc.date} &bull; {doc.size}</p>
+                                <div style={{ flex: 1 }}>
+                                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{doc.title}</h4>
+                                    <p style={{ fontSize: '0.85rem' }}>{doc.date} &bull; {doc.size}</p>
                                 </div>
-                                <div className="r-arrow">&rsaquo;</div>
+                                <div style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>&rsaquo;</div>
                             </div>
                         ))}
                     </div>
                 </section>
+
+
+
+                {/* Spacer for bottom nav */}
+                <div style={{ height: '120px', flexShrink: 0 }}></div>
             </main>
 
             <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} />
@@ -110,90 +158,14 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
                         className={`nav-item-p ${activeTab === tab.id ? 'active' : ''}`}
                         onClick={() => { setActiveTab(tab.id); onNavigate(tab.id); }}
                     >
-                        <span className="n-icon">{tab.icon}</span>
-                        <span className="n-label">{tab.label}</span>
+                        {tab.icon}
+                        <span>{tab.label}</span>
                     </div>
                 ))}
             </nav>
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .dash-root-p { background: var(--bg-primary); height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-                
-                .premium-header { 
-                    flex-shrink: 0;
-                    background: white; 
-                    padding: 40px 24px 20px 24px; 
-                    position: relative;
-                    z-index: 20;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-                }
-                .h-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-                .loc-p { font-size: 14px; font-weight: 600; color: var(--text-header); }
-                .h-user { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-                .u-avatar-p { width: 44px; height: 44px; background: var(--primary-light); color: var(--primary); border-radius: 22px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
-                .u-text p { color: var(--text-muted); font-size: 14px; margin: 0; }
-                .u-text h3 { font-size: 20px; font-weight: 700; margin: 0; color: var(--text-header); }
-                
-                .search-premium { margin-top: 24px; }
-                .search-inner { background: var(--bg-secondary); border: 1px solid var(--border); padding: 14px 20px; border-radius: 24px; display: flex; align-items: center; gap: 12px; }
-                .search-inner input { background: none; border: none; outline: none; color: var(--text-header); flex: 1; font-size: 15px; }
-                .search-inner input::placeholder { color: var(--text-muted); }
-                .search-inner span { font-size: 18px; opacity: 0.5; }
-
-                .dash-main-p { flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 120px; position: relative; z-index: 10; }
-                .dash-main-p::-webkit-scrollbar { display: none; }
-                
-                .section-p { margin-bottom: 32px; }
-                .s-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-                .s-head h3 { font-size: 18px; font-weight: 700; color: var(--text-header); }
-                .s-head span { color: var(--primary); font-size: 14px; font-weight: 600; cursor: pointer; }
-                
-                .r-list-p { display: flex; flex-direction: column; gap: 16px; }
-                .r-card-p { 
-                    padding: 16px; display: flex; align-items: center; gap: 16px; cursor: pointer; 
-                    background: white; border: 1px solid var(--border); border-radius: 20px;
-                    transition: var(--transition);
-                }
-                .r-card-p:active { transform: scale(0.98); border-color: var(--primary); }
-                .r-icon-p { width: 48px; height: 48px; background: var(--bg-secondary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); }
-                .r-text-p { flex: 1; }
-                .r-text-p h4 { font-size: 16px; font-weight: 600; color: var(--text-header); margin-bottom: 4px; }
-                .r-text-p p { font-size: 13px; color: var(--text-body); }
-                .r-arrow { font-size: 24px; color: var(--text-muted); }
-
-                .upload-block-p { margin-bottom: 32px; }
-                .u-block-inner { 
-                    padding: 24px; border-radius: 24px; display: flex; align-items: center; gap: 16px; 
-                    cursor: pointer; transition: var(--transition);
-                    background: var(--primary-light);
-                    border: 1px solid rgba(25, 154, 142, 0.1);
-                }
-                .u-block-inner:active { transform: scale(0.98); }
-                .u-icon-p { width: 48px; height: 48px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--primary); box-shadow: var(--shadow-sm); }
-                .u-text-p { flex: 1; }
-                .u-text-p h4 { font-size: 16px; font-weight: 700; color: var(--primary); margin: 0; }
-                .u-text-p p { font-size: 13px; color: var(--primary); opacity: 0.8; margin: 4px 0 0 0; }
-                .u-btn-p { background: var(--primary); color: white; padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; }
-
-                .bottom-nav-p { 
-                    position: fixed; bottom: 0; left: 0; right: 0; height: 80px; 
-                    display: flex; justify-content: space-around; align-items: center;
-                    background: white; border-top: 1px solid var(--border); z-index: 1000;
-                    padding: 0 20px;
-                }
-                .nav-item-p { 
-                    display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    color: var(--text-muted); cursor: pointer; transition: var(--transition); flex: 1;
-                }
-                .nav-item-p.active { color: var(--primary); }
-                .n-icon { font-size: 24px; margin-bottom: 4px; }
-                .n-label { font-size: 11px; font-weight: 600; }
-                * { -webkit-tap-highlight-color: transparent; user-select: none; }
-                input { user-select: text; }
-            `}} />
         </div>
     );
 };
+
 
 export default Dashboard;
