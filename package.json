@@ -3,6 +3,14 @@
     "private": true,
     "scripts": {
         "build": "npm run build --prefix client",
-        "install": "npm install --prefix client"
+        "install": "npm install && npm install --prefix client"
+    },
+    "dependencies": {
+        "bcryptjs": "^3.0.3",
+        "cors": "^2.8.5",
+        "dotenv": "^17.2.3",
+        "express": "^5.2.1",
+        "jsonwebtoken": "^9.0.3",
+        "mongoose": "^9.1.2"
     }
 }
