@@ -38,7 +38,10 @@ function App() {
     // Check for auto-login
     const token = localStorage.getItem('medics_token');
     if (token && user) {
-      setCurrentStep('dashboard');
+      // Only redirect to dashboard if we are on an introductory/auth screen
+      if (['splash', 'onboarding', 'login', 'signup'].includes(currentStep)) {
+        setCurrentStep('dashboard');
+      }
     } else if (currentStep === 'splash') {
       const timer = setTimeout(() => setCurrentStep('onboarding'), 3000);
       return () => clearTimeout(timer);
@@ -83,6 +86,7 @@ function App() {
         {currentStep === 'profile' && <ProfileView user={user} onBack={() => setCurrentStep('dashboard')} onLogout={handleLogout} onNavigate={(step) => setCurrentStep(step)} />}
         {currentStep === 'records' && (
           <RecordsView
+            user={user}
             documents={documents}
             onBack={() => setCurrentStep('dashboard')}
             onAdd={addDocument}

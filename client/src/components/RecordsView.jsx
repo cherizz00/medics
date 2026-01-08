@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { IconHome, IconRecords, IconProfile, IconStyles } from './Icons';
 
-const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate }) => {
+const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user }) => {
     const [activeTab, setActiveTab] = useState('records');
     const [searchQuery, setSearchQuery] = useState('');
+
+    const userInitials = (user && user.name) ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'G';
 
     const filteredDocs = documents.filter(doc =>
         doc.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -40,19 +42,18 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate }) => {
     return (
         <div className="records-root-p">
             <IconStyles />
-            <div className="mesh-bg"></div>
-            <header className="records-header glass animate-fade">
-                <button onClick={onBack} className="r-back">←</button>
-                <h2>Health Records</h2>
-                <label className="r-add-btn">
-                    <span>+</span>
-                    <input type="file" style={{ display: 'none' }} onChange={handleFileUpload} />
-                </label>
-            </header>
+            <header className="premium-header">
+                <div className="h-top">
+                    <button onClick={onBack} className="r-back">←</button>
+                    <h3>Health Records</h3>
+                    <label className="r-add-btn">
+                        <span>+</span>
+                        <input type="file" style={{ display: 'none' }} onChange={handleFileUpload} />
+                    </label>
+                </div>
 
-            <div className="records-body-p">
-                <div className="search-bar-p animate-fade">
-                    <div className="search-box-p glass">
+                <div className="search-premium animate-fade">
+                    <div className="search-inner glass">
                         <span>🔍</span>
                         <input
                             type="text"
@@ -62,41 +63,44 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate }) => {
                         />
                     </div>
                 </div>
+            </header>
 
-                <div className="records-list-p scroll-area">
+            <main className="dash-main-p">
+
+                <div className="r-list-p scroll-area">
                     {filteredDocs.length > 0 ? filteredDocs.map((doc, i) => (
-                        <div key={doc.id} className="record-card-p premium-card animate-fade" style={{ animationDelay: `${i * 0.05}s` }}>
-                            <div className="record-main-p" onClick={() => openDocument(doc)}>
-                                <div className="record-icon-p">
+                        <div key={doc.id} className="r-card-p animate-fade" style={{ animationDelay: `${i * 0.05}s` }}>
+                            <div className="r-main-content-p" style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }} onClick={() => openDocument(doc)}>
+                                <div className="r-icon-p">
                                     <IconRecords active={false} />
                                 </div>
-                                <div className="record-info-p">
+                                <div className="r-text-p">
                                     <h4>{doc.title}</h4>
                                     <p>{doc.date} &bull; {doc.size}</p>
                                 </div>
                             </div>
-                            <button className="delete-btn-p" onClick={() => onDelete(doc.id)}>
+                            <button className="delete-btn-p" onClick={() => onDelete(doc.id)} style={{ background: '#FFF5F5', color: '#FF5252', border: 'none', width: '36px', height: '36px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                                 🗑️
                             </button>
                         </div>
                     )) : (
-                        <div className="no-records">
+                        <div className="no-records" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                             <p>No records found matching "{searchQuery}"</p>
                         </div>
                     )}
                 </div>
-            </div>
+            </main>
 
-            <nav className="bottom-nav-p glass">
+            <nav className="bottom-nav-p">
                 {[
-                    { id: 'dashboard', label: 'Home', icon: <IconHome active={false} /> },
-                    { id: 'records', label: 'Records', icon: <IconRecords active={true} /> },
-                    { id: 'profile', label: 'Profile', icon: <IconProfile active={false} /> }
+                    { id: 'dashboard', label: 'Home', icon: <IconHome active={activeTab === 'dashboard' || activeTab === 'home'} /> },
+                    { id: 'records', label: 'Records', icon: <IconRecords active={activeTab === 'records'} /> },
+                    { id: 'profile', label: 'Profile', icon: <IconProfile active={activeTab === 'profile'} /> }
                 ].map(tab => (
                     <div
                         key={tab.id}
-                        className={`nav-item-p ${tab.id === 'records' ? 'active' : ''}`}
-                        onClick={() => onNavigate(tab.id)}
+                        className={`nav-item-p ${activeTab === tab.id ? 'active' : ''}`}
+                        onClick={() => { setActiveTab(tab.id); onNavigate(tab.id); }}
                     >
                         <span className="n-icon">{tab.icon}</span>
                         <span className="n-label">{tab.label}</span>
@@ -106,78 +110,60 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate }) => {
 
             <style dangerouslySetInnerHTML={{
                 __html: `
-        .records-root-p { height: 100vh; background: var(--apollo-bg); display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        .mesh-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--mesh-gradient); z-index: 0; pointer-events: none; }
-        
-        .records-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 24px; z-index: 100; border-radius: 0 0 24px 24px; background: rgba(255,255,255,0.8); }
-        .records-header h2 { font-size: 18px; font-weight: 800; color: var(--apollo-blue); margin: 0; }
-        .r-back { background: none; border: none; font-size: 26px; cursor: pointer; color: var(--apollo-blue); display: flex; align-items: center; }
-        .r-add-btn { width: 36px; height: 36px; background: var(--apollo-orange); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; font-weight: 600; }
+                .records-root-p { background: var(--bg-primary); height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+                
+                .premium-header { 
+                    flex-shrink: 0;
+                    background: white; 
+                    padding: 40px 24px 20px 24px; 
+                    position: relative;
+                    z-index: 20;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+                }
+                .h-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+                .r-back { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-header); display: flex; align-items: center; padding: 0; }
+                .premium-header h3 { font-size: 20px; font-weight: 700; color: var(--text-header); margin: 0; }
+                .r-add-btn { width: 36px; height: 36px; background: var(--primary); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; font-weight: 600; }
 
-        .records-body-p { flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 180px; scrollbar-width: none; position: relative; z-index: 1; -webkit-overflow-scrolling: touch; }
-        .records-body-p::-webkit-scrollbar { display: none; }
-        
-        .search-bar-p { margin-bottom: 24px; }
-        .search-box-p { padding: 16px; border-radius: 20px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--apollo-border); }
-        .search-box-p input { background: none; border: none; outline: none; color: var(--apollo-blue); flex: 1; font-size: 16px; font-weight: 500; }
-        .search-box-p input::placeholder { color: #BBB; }
-        
-        .records-list-p { display: flex; flex-direction: column; gap: 12px; }
-        .record-card-p { 
-          padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
-        }
-        .record-main-p { display: flex; align-items: center; gap: 12px; flex: 1; cursor: pointer; }
-        .record-icon-p { width: 44px; height: 44px; background: #E0F2F1; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
-        .record-info-p h4 { font-size: 15px; font-weight: 700; color: var(--apollo-blue); margin: 0; }
-        .record-info-p p { font-size: 12px; color: var(--apollo-text-light); margin: 2px 0 0 0; }
-        
-        .delete-btn-p { 
-          background: #FFF5F5; color: #FF5252; border: none; width: 36px; height: 36px; 
-          border-radius: 12px; display: flex; align-items: center; justify-content: center; 
-          cursor: pointer; font-size: 16px; transition: transform 0.1s ease;
-        }
-        .delete-btn-p:active { background: #FFEAEA; transform: scale(0.9); }
-        .bottom-nav-p { 
-            position: fixed; bottom: 24px; left: 24px; right: 24px; height: 72px; 
-            display: flex !important; flex-direction: row !important;
-            justify-content: space-around; align-items: center;
-            background: rgba(2, 54, 61, 0.9) !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 24px; z-index: 1000;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important;
-            padding: 0 10px;
-        }
-        .nav-item-p { 
-            display: flex !important; flex-direction: column !important; 
-            align-items: center; justify-content: center;
-            color: rgba(255,255,255,0.5); cursor: pointer; 
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); 
-            flex: 1; height: 100%; position: relative;
-        }
-        .nav-item-p.active { color: white !important; }
-        .nav-item-p.active::after {
-            content: ''; position: absolute; top: 10px; width: 40px; height: 40px;
-            background: var(--apollo-orange); border-radius: 12px; z-index: -1;
-            opacity: 0.2; filter: blur(10px); animation: pulse 2s infinite;
-        }
-        .n-icon { font-size: 24px; margin-bottom: 2px; transition: inherit; z-index: 1; }
-        .n-label { font-size: 10px; font-weight: 700; transition: inherit; letter-spacing: 0.5px; opacity: 0.8; z-index: 1; }
-        .nav-item-p.active .n-label { opacity: 1; transform: translateY(-1px); }
-        .nav-item-p.active .n-icon { transform: translateY(-2px); }
+                .search-premium { margin-top: 24px; }
+                .search-inner { background: var(--bg-secondary); border: 1px solid var(--border); padding: 14px 20px; border-radius: 24px; display: flex; align-items: center; gap: 12px; }
+                .search-inner input { background: none; border: none; outline: none; color: var(--text-header); flex: 1; font-size: 15px; }
+                .search-inner input::placeholder { color: var(--text-muted); }
+                .search-inner span { font-size: 18px; opacity: 0.5; }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.2; }
-            50% { transform: scale(1.2); opacity: 0.3; }
-            100% { transform: scale(1); opacity: 0.2; }
-        }
+                .dash-main-p { flex: 1; overflow-y: auto; padding: 24px; padding-bottom: 120px; position: relative; z-index: 10; }
+                .dash-main-p::-webkit-scrollbar { display: none; }
+                
+                .r-list-p { display: flex; flex-direction: column; gap: 16px; }
+                .r-card-p { 
+                    padding: 16px; display: flex; align-items: center; gap: 16px; cursor: pointer; 
+                    background: white; border: 1px solid var(--border); border-radius: 20px;
+                    transition: var(--transition);
+                }
+                .r-card-p:active { transform: scale(0.98); border-color: var(--primary); }
+                .r-icon-p { width: 48px; height: 48px; background: var(--bg-secondary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); }
+                .r-text-p { flex: 1; }
+                .r-text-p h4 { font-size: 16px; font-weight: 600; color: var(--text-header); margin-bottom: 4px; }
+                .r-text-p p { font-size: 13px; color: var(--text-body); }
+                .r-arrow { font-size: 24px; color: var(--text-muted); }
 
-        /* Native App Feel */
-        * { -webkit-tap-highlight-color: transparent; user-select: none; }
-        input { user-select: text; }
+                .bottom-nav-p { 
+                    position: fixed; bottom: 0; left: 0; right: 0; height: 80px; 
+                    display: flex; justify-content: space-around; align-items: center;
+                    background: white; border-top: 1px solid var(--border); z-index: 1000;
+                    padding: 0 20px;
+                }
+                .nav-item-p { 
+                    display: flex; flex-direction: column; align-items: center; justify-content: center;
+                    color: var(--text-muted); cursor: pointer; transition: var(--transition); flex: 1;
+                }
+                .nav-item-p.active { color: var(--primary); }
+                .n-icon { font-size: 24px; margin-bottom: 4px; }
+                .n-label { font-size: 11px; font-weight: 600; }
+                * { -webkit-tap-highlight-color: transparent; user-select: none; }
+                input { user-select: text; }
       `}} />
-        </div>
+        </div >
     );
 };
 

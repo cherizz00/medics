@@ -12,13 +12,20 @@ const LoginView = ({ onLogin, onNavigate }) => {
         setError('');
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/auth/login', {
+            const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phoneNumber, password }),
             });
 
-            const data = await response.json();
+            let data;
+            const text = await response.text();
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error('SERVER RESPONSE WAS NOT JSON:', text);
+                throw new Error('Server returned HTML instead of JSON. Check console for details.');
+            }
 
             if (response.ok) {
                 localStorage.setItem('medics_token', data.token);
@@ -45,76 +52,100 @@ const LoginView = ({ onLogin, onNavigate }) => {
 
     return (
         <div className="login-root-p">
-            <div className="mesh-bg"></div>
-            <div className="bg-decor">
-                <div className="blob blob-1"></div>
-                <div className="blob blob-2"></div>
-            </div>
-
-            <div className="login-panel glass animate-fade">
+            <div className="login-panel animate-fade">
                 <div className="login-header-p">
                     <div className="mini-logo">
                         <IconLogo />
                     </div>
-                    <h1>Welcome back</h1>
-                    <p>Login to access your medical records</p>
+                    <h1>Welcome Back</h1>
+                    <p>Enter your details to continue</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="login-form-p">
-                    {error && <div style={{ color: '#FF5252', marginBottom: '15px', textAlign: 'center', fontSize: '14px' }}>{error}</div>}
+                    {error && <div className="error-msg">{error}</div>}
 
                     <div className="input-p">
-                        <label>Phone Number</label>
                         <div className="input-wrapper-p">
+                            <span className="input-icon">📞</span>
                             <span className="cc">+91</span>
                             <input
                                 type="tel"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
-                                placeholder="Enter 10 digits"
+                                placeholder="Phone Number"
                                 maxLength="10"
-                                className="apollo-input"
+                                className="clean-input"
                                 required
                             />
                         </div>
                     </div>
 
                     <div className="input-p">
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter password"
-                            className="apollo-input"
-                            required
-                        />
+                        <div className="input-wrapper-p">
+                            <span className="input-icon">🔒</span>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Password"
+                                className="clean-input"
+                                required
+                            />
+                        </div>
                     </div>
 
-                    <button type="submit" className="apollo-btn sign-btn" disabled={isLoading}>
+                    <div className="forgot-pass">Forgot Password?</div>
+
+                    <button type="submit" className="btn-primary" disabled={isLoading}>
                         {isLoading ? 'Logging In...' : 'Log In'}
                     </button>
 
-                    <div className="resend-p" style={{ marginTop: '20px' }}>
-                        New to Medics? <span onClick={() => onNavigate('signup')}>Create Account</span>
+                    <div className="resend-p">
+                        Don't have an account? <span onClick={() => onNavigate('signup')}>Sign Up</span>
                     </div>
                 </form>
 
                 <div className="login-social">
                     <div className="sep"><span>Or login with</span></div>
                     <div className="social-grid">
-                        <div className="social-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-1.92 5.36-7.84 5.36-5.12 0-9.28-4.24-9.28-9.44s4.16-9.44 9.28-9.44c2.88 0 4.88 1.2 5.92 2.24l2.56-2.48C19.44 1.84 16.24 0 12.48 0 5.76 0 0 5.76 0 12.8s5.76 12.8 12.48 12.8c7.04 0 11.76-4.96 11.76-11.92 0-.8-.08-1.44-.16-2.08h-11.6z" /></svg>
-                        </div>
-                        <div className="social-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
-                        </div>
-                        <div className="social-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05 1.79-3.23 2.5a.73.73 0 0 1-.9-.1c-2.43-2.42-4.14-5.22-5.11-8.22A16.2 16.2 0 0 1 7 8a9.49 9.49 0 0 1 2.76-6.76.73.73 0 0 1 1 0l3 3a.75.75 0 0 1 .1 1.05 5.5 5.5 0 0 0 0 7.42.75.75 0 0 1-.1 1.05l-3 3a.73.73 0 0 1-.78.1c-.24-.12-.47-.26-.7-.4a13.36 13.36 0 0 0 5.61 5.61.73.73 0 0 1 .1-.78l3-3a.75.75 0 0 1 1.05.1l3 3a.73.73 0 0 1 0 1zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" /></svg>
-                        </div>
+                        <div className="social-icon">G</div>
+                        <div className="social-icon">f</div>
+                        <div className="social-icon"></div>
                     </div>
                 </div>
             </div>
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .login-root-p { background: var(--bg-primary); height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+                .login-panel { width: 100%; max-width: 400px; }
+                .login-header-p { text-align: center; margin-bottom: 40px; }
+                .login-header-p h1 { font-size: 28px; color: var(--text-header); margin-bottom: 8px; }
+                .login-header-p p { color: var(--text-body); font-size: 16px; }
+                
+                .input-wrapper-p { 
+                    display: flex; align-items: center; gap: 12px; 
+                    background: var(--bg-secondary); border: 1px solid var(--border); 
+                    border-radius: 24px; padding: 4px 20px;
+                    transition: var(--transition);
+                }
+                .input-wrapper-p:focus-within { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(25, 154, 142, 0.1); }
+                .input-icon { opacity: 0.5; }
+                .cc { font-weight: 700; color: var(--text-header); font-size: 14px; border-right: 1px solid var(--border); padding-right: 12px; }
+                .clean-input { border: none !important; background: none !important; padding: 16px 0 !important; font-size: 16px; flex: 1; outline: none; color: var(--text-header); }
+                
+                .error-msg { color: #E11D48; background: #FFF1F2; padding: 12px; border-radius: 12px; font-size: 14px; margin-bottom: 20px; text-align: center; }
+                .forgot-pass { text-align: right; color: var(--primary); font-size: 14px; font-weight: 600; margin: -10px 4px 24px 0; cursor: pointer; }
+                .resend-p { text-align: center; margin-top: 24px; font-size: 14px; color: var(--text-body); }
+                .resend-p span { color: var(--primary); font-weight: 700; cursor: pointer; }
+
+                .login-social { margin-top: 40px; }
+                .sep { display: flex; align-items: center; gap: 12px; color: var(--text-muted); font-size: 12px; margin-bottom: 24px; }
+                .sep::before, .sep::after { content: ''; flex: 1; border-bottom: 1px solid var(--border); }
+                .social-grid { display: flex; justify-content: center; gap: 16px; }
+                .social-icon { width: 60px; height: 60px; border: 1px solid var(--border); border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--text-header); cursor: pointer; transition: var(--transition); }
+                .social-icon:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+            `}} />
         </div>
     );
 };

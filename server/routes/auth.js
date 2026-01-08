@@ -9,10 +9,15 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 // Sign Up Route
 router.post('/signup', async (req, res) => {
     try {
-        const { name, phoneNumber, password } = req.body;
+        const { name, phoneNumber, phone, password } = req.body;
+        const phoneToUse = phoneNumber || phone;
+
+        if (!phoneToUse) {
+            return res.status(400).json({ message: 'Phone number is required' });
+        }
 
         // Check if user already exists
-        const existingUser = await User.findOne({ phoneNumber });
+        const existingUser = await User.findOne({ phoneNumber: phoneToUse });
         if (existingUser) {
             return res.status(400).json({ message: 'User with this phone number already exists' });
         }
@@ -24,7 +29,7 @@ router.post('/signup', async (req, res) => {
         // Create new user
         const newUser = new User({
             name,
-            phoneNumber,
+            phoneNumber: phoneToUse,
             password: hashedPassword
         });
 
@@ -38,6 +43,9 @@ router.post('/signup', async (req, res) => {
             user: { id: newUser._id, name: newUser.name, phoneNumber: newUser.phoneNumber }
         });
     } catch (err) {
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({ message: Object.values(err.errors).map(e => e.message).join(', ') });
+        }
         console.error(err);
         res.status(500).json({ message: 'Server error' });
     }
@@ -46,10 +54,15 @@ router.post('/signup', async (req, res) => {
 // Login Route
 router.post('/login', async (req, res) => {
     try {
-        const { phoneNumber, password } = req.body;
+        const { phoneNumber, phone, password } = req.body;
+        const phoneToUse = phoneNumber || phone;
+
+        if (!phoneToUse) {
+            return res.status(400).json({ message: 'Phone number is required' });
+        }
 
         // Check for user
-        const user = await User.findOne({ phoneNumber });
+        const user = await User.findOne({ phoneNumber: phoneToUse });
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }

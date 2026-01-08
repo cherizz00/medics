@@ -61,24 +61,16 @@ export const IconQuery = () => (
 export const IconStyles = () => (
     <style dangerouslySetInnerHTML={{
         __html: `
-    .premium-icon { transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
-    .premium-icon .icon-path { transition: all 0.5s ease; stroke: #888; }
-    .premium-icon.active .icon-path { stroke: var(--apollo-blue); }
-    .premium-icon.active .icon-path-accent { stroke: var(--apollo-orange); }
+    .premium-icon { transition: var(--transition); }
+    .premium-icon .icon-path { stroke: var(--text-muted); }
+    .premium-icon.active .icon-path { stroke: var(--primary); }
+    .premium-icon.active .icon-path-accent { stroke: var(--primary-dark); }
     
-    .nav-item-p.active .icon-home-roof { transform: translateY(-2px); }
-    .nav-item-p.active .icon-home-door { transform: scaleY(0.8); transform-origin: bottom; }
+    .nav-item-p.active .icon-home-roof { transform: translateY(-1px); }
+    .nav-item-p.active .icon-home-door { opacity: 1; }
     
     .nav-item-p.active .icon-doc-body { transform: scale(1.05); }
-    .nav-item-p.active .icon-doc-fold { stroke: var(--apollo-orange); }
     
-    .nav-item-p.active .icon-user-head { transform: translateY(-1px) scale(1.1); }
-    
-    @keyframes iconPulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
-    }
-    .s-item-p:hover .premium-icon { animation: iconPulse 0.6s ease-in-out; }
+    .nav-item-p.active .icon-user-head { transform: translateY(-1px); }
   `}} />
 );
