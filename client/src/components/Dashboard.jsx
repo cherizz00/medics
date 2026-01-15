@@ -40,15 +40,16 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
 
     return (
         <div style={{ height: '100vh', background: 'var(--bg-app)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <header className="premium-header animate-slide-up" style={{ flexShrink: 0 }}>
+            <header className="premium-header anim-slide-up" style={{ flexShrink: 0 }}>
                 <div className="h-top">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-secondary)' }}>
-                        <span style={{ color: 'var(--primary)' }}>📍</span> Mumbai Central
+                        <span style={{ color: 'var(--primary)', fontSize: '1.2rem' }}>📍</span> Mumbai Central
                     </div>
                     <div style={{
-                        width: '40px', height: '40px', borderRadius: '50%', background: 'white',
+                        width: '40px', height: '40px', borderRadius: '14px', background: 'white',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border-light)'
+                        boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border-subtle)',
+                        fontSize: '1.25rem'
                     }}>
                         🔔
                     </div>
@@ -56,66 +57,110 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
 
                 <div onClick={() => onNavigate('profile')} style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer',
-                    marginTop: '8px'
+                    marginTop: '8px', marginBottom: '20px'
                 }}>
                     <div>
-                        <p style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}>Welcome back,</p>
-                        <h3 style={{ fontSize: '1.5rem', color: 'var(--text-main)', margin: '4px 0' }}>{userName}</h3>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Welcome back,</p>
+                        <h3 style={{ fontSize: '1.75rem', color: 'var(--text-main)', margin: '4px 0', letterSpacing: '-0.03em' }}>{userName}</h3>
                     </div>
                     <div style={{
-                        width: '56px', height: '56px', borderRadius: '20px',
+                        width: '60px', height: '60px', borderRadius: '22px',
                         background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
                         color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '1.2rem', fontWeight: '700', boxShadow: 'var(--shadow-md)'
+                        fontSize: '1.4rem', fontWeight: '800', boxShadow: 'var(--shadow-lg)'
                     }}>
                         {userInitials}
                     </div>
                 </div>
 
-                <div className="input-premium" style={{
-                    display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'white'
-                }}>
-                    <span style={{ fontSize: '1.2rem', opacity: 0.6 }}>🔍</span>
-                    <input type="text" placeholder="Search medical services..." style={{
-                        border: 'none', outline: 'none', width: '100%', fontSize: '1rem', color: 'var(--text-main)'
-                    }} />
+                <div className="input-premium" style={{ marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span style={{ fontSize: '1.2rem', opacity: 0.6 }}>🔍</span>
+                        <input type="text" placeholder="Search doctors, meds, reports..." style={{
+                            border: 'none', outline: 'none', width: '100%', fontSize: '1rem', color: 'var(--text-main)', background: 'transparent'
+                        }} />
+                    </div>
                 </div>
             </header>
 
             <main style={{ flex: 1, overflowY: 'auto', padding: '24px', paddingBottom: '100px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
-                <section className="premium-card animate-fade" style={{
-                    background: 'linear-gradient(135deg, var(--secondary) 0%, #4338ca 100%)',
+                {/* Health Vitals */}
+                <section className="anim-slide-up" style={{ animationDelay: '0.1s' }}>
+                    <div className="section-title">
+                        <h3>Health Vitals</h3>
+                        <span style={{ color: 'var(--primary)', fontWeight: '600', fontSize: '0.9rem' }}>Details</span>
+                    </div>
+                    <div className="pill-container" style={{ marginLeft: '-4px', paddingLeft: '4px' }}>
+                        {[
+                            { label: 'Blood Pressure', value: '120/80', unit: 'mmHg', color: '#FEF2F2', icon: '❤️' },
+                            { label: 'Heart Rate', value: '72', unit: 'bpm', color: '#F0F9FF', icon: '⚡' },
+                            { label: 'Sugar Level', value: '94', unit: 'mg/dL', color: '#F0FDF4', icon: '🩸' }
+                        ].map((vital, i) => (
+                            <div key={i} className="premium-card" style={{
+                                minWidth: '130px', padding: '16px', background: vital.color, border: 'none',
+                                display: 'flex', flexDirection: 'column', gap: '8px'
+                            }}>
+                                <span style={{ fontSize: '1.2rem' }}>{vital.icon}</span>
+                                <h4 style={{ fontSize: '1.125rem', margin: 0 }}>{vital.value}</h4>
+                                <p style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', opacity: 0.7 }}>{vital.label}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Quick Services */}
+                <section className="anim-slide-up" style={{ animationDelay: '0.2s' }}>
+                    <div className="section-title">
+                        <h3>Quick Services</h3>
+                    </div>
+                    <div className="service-grid">
+                        {[
+                            { label: 'Doctors', icon: '👨‍⚕️', color: 'var(--primary-subtle)' },
+                            { label: 'Pharmacy', icon: '💊', color: '#FFF7ED' },
+                            { label: 'Lab Tests', icon: '🔬', color: '#F0FDFA' },
+                            { label: 'Ambulance', icon: '🚑', color: '#FEF2F2' }
+                        ].map((s, i) => (
+                            <div key={i} className="service-item">
+                                <div className="service-icon-wrap" style={{ background: s.color }}>
+                                    {s.icon}
+                                </div>
+                                <span className="service-label">{s.label}</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="premium-card anim-slide-up" style={{
+                    background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
                     color: 'white', padding: '24px', position: 'relative', overflow: 'hidden',
-                    border: 'none', flexShrink: 0
+                    border: 'none', flexShrink: 0, animationDelay: '0.3s'
                 }} onClick={() => fileInputRef.current.click()}>
                     <div style={{ position: 'relative', zIndex: 10 }}>
                         <div style={{
                             width: '48px', height: '48px', background: 'rgba(255,255,255,0.2)',
-                            borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '1.5rem', marginBottom: '16px'
                         }}>📄</div>
-                        <h4 style={{ color: 'white', fontSize: '1.25rem', marginBottom: '4px' }}>Upload Records</h4>
+                        <h4 style={{ color: 'white', fontSize: '1.25rem', marginBottom: '4px' }}>Upload Health Vault</h4>
                         <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', marginBottom: '20px' }}>
-                            Securely store your prescriptions and reports
+                            Store your reports in a secure encrypted vault
                         </p>
                         <button style={{
-                            background: 'white', color: 'var(--secondary)', border: 'none',
-                            padding: '10px 20px', borderRadius: 'var(--radius-full)', fontWeight: '700',
-                            fontSize: '0.9rem', cursor: 'pointer'
-                        }}>Tap to Upload +</button>
+                            background: 'white', color: 'var(--primary)', border: 'none',
+                            padding: '12px 24px', borderRadius: 'var(--radius-full)', fontWeight: '800',
+                            fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }}>+ Quick Upload</button>
                     </div>
-                    {/* Decorative blobs */}
-                    <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '120px', height: '120px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}></div>
-                    <div style={{ position: 'absolute', bottom: '-40px', left: '40%', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}></div>
+                    <div style={{ position: 'absolute', top: '-10px', right: '-10px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}></div>
                 </section>
 
-                <section className="animate-fade" style={{ animationDelay: '0.1s', flexShrink: 0 }}>
+                <section className="anim-slide-up" style={{ animationDelay: '0.4s', flexShrink: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                        <h3 style={{ fontSize: '1.25rem' }}>Medical Records</h3>
+                        <h3 style={{ fontSize: '1.25rem' }}>Recent Records</h3>
                         <span onClick={() => onNavigate('records')} style={{
-                            color: 'var(--primary)', fontWeight: '600', fontSize: '0.9rem', cursor: 'pointer'
-                        }}>See All</span>
+                            color: 'var(--primary)', fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer'
+                        }}>View Vault</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {documents.map((doc, i) => (
@@ -123,17 +168,18 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
                                 padding: '16px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer'
                             }}>
                                 <div style={{
-                                    width: '48px', height: '48px', borderRadius: '12px',
-                                    background: 'var(--primary-light)', color: 'var(--primary)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'
+                                    width: '52px', height: '52px', borderRadius: '14px',
+                                    background: i % 2 === 0 ? 'var(--primary-subtle)' : 'var(--accent-light)',
+                                    color: i % 2 === 0 ? 'var(--primary)' : 'var(--accent)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem'
                                 }}>
-                                    <IconRecords active={false} />
+                                    {i % 2 === 0 ? '📄' : '📜'}
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{doc.title}</h4>
-                                    <p style={{ fontSize: '0.85rem' }}>{doc.date} &bull; {doc.size}</p>
+                                    <h4 style={{ fontSize: '1rem', marginBottom: '4px', fontWeight: '700' }}>{doc.title}</h4>
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>{doc.date} &bull; {doc.size}</p>
                                 </div>
-                                <div style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>&rsaquo;</div>
+                                <div style={{ color: 'var(--text-muted)', fontSize: '1.5rem' }}>&rsaquo;</div>
                             </div>
                         ))}
                     </div>
@@ -147,7 +193,7 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
 
             <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} />
 
-            <nav className="bottom-nav-p">
+            <nav className="bottom-nav">
                 {[
                     { id: 'dashboard', label: 'Home', icon: <IconHome active={activeTab === 'dashboard' || activeTab === 'home'} /> },
                     { id: 'records', label: 'Records', icon: <IconRecords active={activeTab === 'records'} /> },
@@ -155,7 +201,7 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
                 ].map(tab => (
                     <div
                         key={tab.id}
-                        className={`nav-item-p ${activeTab === tab.id ? 'active' : ''}`}
+                        className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
                         onClick={() => { setActiveTab(tab.id); onNavigate(tab.id); }}
                     >
                         {tab.icon}

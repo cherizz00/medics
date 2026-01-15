@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { IconPhone, IconLock, IconGoogle, IconFacebook, IconApple } from './Icons';
 
 const SignUpView = ({ onSignUp, onNavigate }) => {
     const [name, setName] = useState('');
@@ -44,87 +45,124 @@ const SignUpView = ({ onSignUp, onNavigate }) => {
     };
 
     const IconLogo = () => (
-        <svg width="64" height="64" viewBox="0 0 100 100" className="animate-pulse-subtle">
+        <svg width="64" height="64" viewBox="0 0 100 100" className="anim-pulse">
             <path d="M50 15L70 45H30L50 15Z" fill="var(--warning)" />
             <path d="M50 30V80" stroke="var(--primary-dark)" strokeWidth="8" strokeLinecap="round" />
             <path d="M25 55H75" stroke="var(--primary-dark)" strokeWidth="8" strokeLinecap="round" />
         </svg>
     );
 
+    const IconUser = () => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 21V19a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+        </svg>
+    );
+
     return (
-        <div style={{
+        <div className="mesh-gradient" style={{
             minHeight: '100vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, var(--primary-light) 0%, #ffffff 100%)',
-            padding: '24px'
+            padding: '24px',
+            position: 'relative',
+            overflow: 'hidden'
         }}>
-            <div className="premium-card glass animate-slide-up" style={{
+            {/* Animated Background Blobs */}
+            <div className="bg-blob" style={{ top: '5%', right: '15%', background: 'rgba(99, 102, 241, 0.1)' }}></div>
+            <div className="bg-blob" style={{ bottom: '5%', left: '15%', animationDelay: '-7s' }}></div>
+
+            <div className="premium-card glass-morphism anim-slide-up" style={{
                 width: '100%',
                 maxWidth: '420px',
                 padding: '48px 32px',
-                border: '1px solid rgba(255,255,255,0.8)'
+                borderRadius: 'var(--radius-2xl)',
+                position: 'relative',
+                zIndex: 1,
+                border: '1px solid rgba(255, 255, 255, 0.4)'
             }}>
                 <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                     <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'center' }}>
-                        <IconLogo />
+                        <div style={{
+                            width: '80px',
+                            height: '80px',
+                            borderRadius: '24px',
+                            background: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: 'var(--shadow-lg)'
+                        }}>
+                            <IconLogo />
+                        </div>
                     </div>
-                    <h1 style={{ fontSize: '28px', marginBottom: '8px', color: 'var(--primary-dark)' }}>Create Account</h1>
-                    <p>Begin your wellness journey today</p>
+                    <h1 style={{ fontSize: '32px', marginBottom: '8px', color: 'var(--primary-dark)', fontWeight: '800' }}>Create Account</h1>
+                    <p style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>Begin your wellness journey today</p>
                 </div>
 
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     {error && (
-                        <div style={{
-                            padding: '12px',
+                        <div className="anim-shake" style={{
+                            padding: '14px',
                             borderRadius: 'var(--radius-md)',
                             background: 'var(--error-bg)',
                             color: 'var(--error)',
-                            fontSize: '0.9rem',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
                             textAlign: 'center',
-                            border: '1px solid rgba(239, 68, 68, 0.2)'
+                            border: '1px solid rgba(239, 68, 68, 0.1)'
                         }}>
                             {error}
                         </div>
                     )}
 
-                    <div>
+                    <div className="input-premium-wrapper">
                         <label style={{
                             display: 'block',
-                            fontSize: '0.85rem',
-                            fontWeight: '600',
-                            marginBottom: '6px',
-                            color: 'var(--text-secondary)',
+                            fontSize: '0.75rem',
+                            fontWeight: '700',
+                            marginBottom: '8px',
+                            color: 'var(--primary-dark)',
+                            letterSpacing: '0.05em',
                             marginLeft: '4px'
                         }}>FULL NAME</label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="John Doe"
-                            className="input-premium"
-                            required
-                        />
+                        <div style={{ position: 'relative' }}>
+                            <div className="input-icon">
+                                <IconUser />
+                            </div>
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="John Doe"
+                                className="input-premium"
+                                required
+                            />
+                        </div>
                     </div>
 
-                    <div>
+                    <div className="input-premium-wrapper">
                         <label style={{
                             display: 'block',
-                            fontSize: '0.85rem',
-                            fontWeight: '600',
-                            marginBottom: '6px',
-                            color: 'var(--text-secondary)',
+                            fontSize: '0.75rem',
+                            fontWeight: '700',
+                            marginBottom: '8px',
+                            color: 'var(--primary-dark)',
+                            letterSpacing: '0.05em',
                             marginLeft: '4px'
                         }}>PHONE NUMBER</label>
                         <div style={{ position: 'relative' }}>
+                            <div className="input-icon">
+                                <IconPhone />
+                            </div>
                             <span style={{
                                 position: 'absolute',
-                                left: '16px',
+                                left: '44px',
                                 top: '50%',
                                 transform: 'translateY(-50%)',
                                 fontSize: '1rem',
-                                color: 'var(--text-muted)',
+                                color: 'var(--text-main)',
                                 fontWeight: '600'
                             }}>+91</span>
                             <input
@@ -134,49 +172,72 @@ const SignUpView = ({ onSignUp, onNavigate }) => {
                                 placeholder="98765 43210"
                                 maxLength="10"
                                 className="input-premium"
-                                style={{ paddingLeft: '54px' }}
+                                style={{ paddingLeft: '84px' }}
                                 required
                             />
                         </div>
                     </div>
 
-                    <div>
+                    <div className="input-premium-wrapper">
                         <label style={{
                             display: 'block',
-                            fontSize: '0.85rem',
-                            fontWeight: '600',
-                            marginBottom: '6px',
-                            color: 'var(--text-secondary)',
+                            fontSize: '0.75rem',
+                            fontWeight: '700',
+                            marginBottom: '8px',
+                            color: 'var(--primary-dark)',
+                            letterSpacing: '0.05em',
                             marginLeft: '4px'
                         }}>CREATE PASSWORD</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            className="input-premium"
-                            required
-                        />
+                        <div style={{ position: 'relative' }}>
+                            <div className="input-icon">
+                                <IconLock />
+                            </div>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                className="input-premium"
+                                required
+                            />
+                        </div>
                     </div>
 
-                    <button type="submit" className="btn-primary" disabled={isLoading} style={{ marginTop: '12px' }}>
+                    <button type="submit" className="btn btn-primary btn-lg" disabled={isLoading} style={{
+                        marginTop: '8px',
+                        background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
+                        border: 'none',
+                        boxShadow: 'var(--shadow-glow)',
+                        borderRadius: 'var(--radius-lg)'
+                    }}>
                         {isLoading ? 'Creating Account...' : 'Sign Up'}
                     </button>
 
                     <div style={{
-                        marginTop: '24px',
+                        marginTop: '16px',
                         textAlign: 'center',
-                        fontSize: '0.9rem',
+                        fontSize: '0.95rem',
                         color: 'var(--text-secondary)'
                     }}>
                         Already have an account? <span onClick={() => onNavigate('login')} style={{
                             color: 'var(--primary)',
-                            fontWeight: '700',
+                            fontWeight: '800',
                             cursor: 'pointer'
-                        }}>Log In</span>
+                        }} className="hover-underline">Log In</span>
                     </div>
                 </form>
             </div>
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .hover-underline:hover { text-decoration: underline; }
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-4px); }
+                    75% { transform: translateX(4px); }
+                }
+                .anim-shake { animation: shake 0.4s ease-in-out; }
+            `}} />
         </div>
     );
 };

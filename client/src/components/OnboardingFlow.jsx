@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 
 const onboardingData = [
     {
-        title: "Secure Health Records",
-        image: "https://cdn-icons-png.flaticon.com/512/3004/3004458.png", // Using a placeholder icon/image
+        title: "Secure Data Storage",
+        image: "https://cdn-icons-png.flaticon.com/512/3004/3004458.png",
         desc: "Store your prescriptions, lab reports, and medical history in one encrypted vault."
     },
     {
@@ -22,88 +22,98 @@ const OnboardingFlow = ({ onComplete }) => {
     const [step, setStep] = useState(0);
 
     return (
-        <div style={{
-            height: '100vh',
-            background: 'var(--bg-app)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: '24px',
-            paddingBottom: '40px',
-            position: 'relative'
-        }}>
+        <div className="page-container" style={{ justifyContent: 'center', padding: '0 24px' }}>
+            {/* Image Carousel */}
             <div style={{
+                position: 'relative',
                 width: '100%',
-                flex: 1,
+                height: '400px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                position: 'relative',
-                marginBottom: '24px'
+                marginBottom: '2rem'
             }}>
                 {onboardingData.map((data, i) => (
                     <div key={i} style={{
                         position: 'absolute',
+                        top: 0,
+                        left: 0,
                         width: '100%',
                         height: '100%',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         opacity: i === step ? 1 : 0,
-                        transform: i === step ? 'scale(1)' : 'scale(0.95)',
-                        transition: 'opacity 0.5s ease, transform 0.5s ease',
+                        transform: i === step ? 'scale(1)' : 'scale(0.9)',
+                        transition: 'all 0.6s var(--ease-elastic)',
                         pointerEvents: 'none'
                     }}>
                         <img
                             src={data.image}
                             alt={data.title}
                             style={{
-                                maxWidth: '80%',
+                                width: '80%',
                                 maxHeight: '300px',
                                 objectFit: 'contain',
-                                filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.1))'
+                                filter: 'drop-shadow(0 20px 30px rgba(13, 148, 136, 0.15))'
                             }}
                         />
                     </div>
                 ))}
             </div>
 
-            <div className="animate-slide-up" style={{
+            {/* Content Section */}
+            <div className="anim-fade-up" style={{
                 textAlign: 'center',
-                maxWidth: '320px',
+                width: '100%',
+                maxWidth: '360px',
+                margin: '0 auto',
                 zIndex: 10
             }}>
+                {/* Dots */}
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '32px' }}>
                     {onboardingData.map((_, i) => (
                         <div key={i} style={{
-                            width: i === step ? '24px' : '8px',
+                            width: i === step ? '32px' : '8px',
                             height: '8px',
-                            background: i === step ? 'var(--primary)' : 'var(--border-light)',
+                            background: i === step ? 'var(--primary)' : 'var(--border-medium)',
                             borderRadius: '4px',
-                            transition: 'all 0.3s ease'
-                        }}></div>
+                            transition: 'all 0.4s var(--ease-elastic)'
+                        }} />
                     ))}
                 </div>
 
-                <h2 style={{ fontSize: '1.75rem', marginBottom: '16px', color: 'var(--text-main)' }}>
+                <h2 style={{
+                    fontSize: '2rem',
+                    marginBottom: '16px',
+                    background: 'linear-gradient(135deg, var(--text-main) 0%, var(--text-secondary) 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                }}>
                     {onboardingData[step].title}
                 </h2>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: '1.6', marginBottom: '40px' }}>
+
+                <p style={{
+                    fontSize: '1rem',
+                    lineHeight: '1.6',
+                    marginBottom: '40px',
+                    color: 'var(--text-secondary)'
+                }}>
                     {onboardingData[step].desc}
                 </p>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%' }}>
                     {step < onboardingData.length - 1 ? (
                         <>
-                            <button className="btn-primary" onClick={() => setStep(step + 1)}>
+                            <button className="btn btn-primary btn-lg" onClick={() => setStep(step + 1)}>
                                 Continue
                             </button>
-                            <button className="btn-ghost" onClick={() => setStep(onboardingData.length - 1)}>
+                            <button className="btn btn-ghost" onClick={() => setStep(onboardingData.length - 1)}>
                                 Skip
                             </button>
                         </>
                     ) : (
-                        <button className="btn-primary" onClick={onComplete}>
+                        <button className="btn btn-primary btn-lg" onClick={onComplete}>
                             Get Started
                         </button>
                     )}

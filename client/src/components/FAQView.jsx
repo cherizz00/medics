@@ -34,13 +34,18 @@ const FAQView = ({ onBack }) => {
     return (
         <div style={{ background: 'var(--bg-app)', minHeight: '100vh' }}>
             <IconStyles />
-            <header className="premium-header animate-slide-up">
-                <div className="h-top">
-                    <button onClick={onBack} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--text-main)' }}>
+            <header className="premium-header anim-slide-up">
+                <div className="h-top" style={{ marginBottom: 0 }}>
+                    <button onClick={onBack} style={{
+                        background: 'var(--bg-app)', border: '1px solid var(--border-subtle)',
+                        width: '40px', height: '40px', borderRadius: '12px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-main)'
+                    }}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
                     </button>
-                    <h3 style={{ fontSize: '1.25rem', margin: 0 }}>Help & Support</h3>
-                    <div className="p-bell" style={{ opacity: 0 }}>🔔</div>
+                    <h3 style={{ fontSize: '1.25rem', margin: 0, fontWeight: '800' }}>Help & Support</h3>
+                    <div style={{ width: 40 }}></div>
                 </div>
             </header>
 
@@ -48,11 +53,11 @@ const FAQView = ({ onBack }) => {
                 {faqs.map((item, i) => (
                     <div
                         key={i}
-                        className={`premium-card animate-fade`}
+                        className="premium-card anim-slide-up"
                         style={{
                             padding: '20px', cursor: 'pointer', animationDelay: `${i * 0.05}s`,
-                            background: activeIndex === i ? 'var(--bg-secondary)' : 'white',
-                            borderColor: activeIndex === i ? 'var(--primary)' : 'var(--border)'
+                            background: activeIndex === i ? 'var(--primary-light)' : 'white',
+                            borderColor: activeIndex === i ? 'var(--primary)' : 'var(--border-subtle)'
                         }}
                         onClick={() => toggleFAQ(i)}
                     >

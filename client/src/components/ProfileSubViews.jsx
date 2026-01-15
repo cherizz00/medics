@@ -3,13 +3,18 @@ import { IconStyles } from './Icons';
 
 // Shared Header Component for consistency
 const SubHeader = ({ title, onBack }) => (
-    <header className="premium-header animate-slide-up">
-        <div className="h-top">
-            <button onClick={onBack} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--text-main)' }}>
+    <header className="premium-header anim-slide-up">
+        <div className="h-top" style={{ marginBottom: 0 }}>
+            <button onClick={onBack} style={{
+                background: 'var(--bg-app)', border: '1px solid var(--border-subtle)',
+                width: '40px', height: '40px', borderRadius: '12px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-main)'
+            }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
             </button>
-            <h3 style={{ fontSize: '1.25rem', margin: 0 }}>{title}</h3>
-            <div className="p-bell" style={{ width: 24 }}></div>
+            <h3 style={{ fontSize: '1.25rem', margin: 0, fontWeight: '800' }}>{title}</h3>
+            <div style={{ width: 40 }}></div>
         </div>
     </header>
 );
@@ -24,12 +29,13 @@ export const SharedAccessView = ({ onBack }) => {
         <div style={{ background: 'var(--bg-app)', minHeight: '100vh' }}>
             <SubHeader title="Shared Access" onBack={onBack} />
             <main style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div className="animate-fade" style={{
-                    background: 'var(--primary-light)', padding: '16px', borderRadius: '16px',
-                    display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--primary-dark)', fontSize: '0.9rem', fontWeight: '500'
+                <div className="anim-slide-up" style={{
+                    background: 'var(--primary-light)', padding: '18px', borderRadius: '20px',
+                    display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--primary-dark)',
+                    fontSize: '0.9rem', fontWeight: '600', border: '1px solid var(--primary-subtle)'
                 }}>
-                    <span style={{ fontSize: '1.25rem' }}>🔐</span>
-                    <p style={{ margin: 0 }}>You have full control. Revoke access at any time.</p>
+                    <span style={{ fontSize: '1.5rem' }}>🔐</span>
+                    <p style={{ margin: 0 }}>Your data is end-to-end encrypted. You can revoke any doctor's access instantly.</p>
                 </div>
 
                 <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-main)', marginTop: '8px' }}>Active Shares</h4>
@@ -49,16 +55,25 @@ export const SharedAccessView = ({ onBack }) => {
                             <div style={{ height: '1px', background: 'var(--border-light)', margin: '12px 0' }}></div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>🕒 {share.expiry}</span>
-                                <button style={{
-                                    color: 'var(--error)', background: 'none', border: 'none',
-                                    fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer'
-                                }}>Revoke</button>
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm('Revoke access for ' + share.name + '?')) {
+                                            setShares(shares.filter(s => s.id !== share.id));
+                                        }
+                                    }}
+                                    style={{
+                                        color: 'var(--error)', background: 'none', border: 'none',
+                                        fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer'
+                                    }}>Revoke</button>
                             </div>
                         </div>
                     ))}
+                    {shares.length === 0 && (
+                        <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontStyle: 'italic' }}>No active shares</p>
+                    )}
                 </div>
 
-                <button className="btn-primary" style={{ marginTop: '12px', width: '100%', padding: '14px' }}>+ Share New Access</button>
+                <button className="btn-primary" style={{ marginTop: '12px', width: '100%', padding: '16px', borderRadius: '20px', fontWeight: '800' }}>+ Share New Access</button>
             </main>
         </div>
     );
@@ -137,11 +152,13 @@ export const StorageView = ({ onBack }) => {
                     <div style={{ textAlign: 'center' }}>
                         <h3 style={{ fontSize: '1.25rem', marginBottom: '4px', color: 'var(--text-main)' }}>2.25 GB / 5 GB</h3>
                         <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Standard Plan</p>
-                        <button style={{
-                            marginTop: '12px', background: 'var(--text-main)', color: 'white',
-                            border: 'none', padding: '8px 16px', borderRadius: '20px',
-                            fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'
-                        }}>Upgrade Plan</button>
+                        <button
+                            onClick={() => alert("Premium plans are coming soon!")}
+                            style={{
+                                marginTop: '12px', background: 'var(--text-main)', color: 'white',
+                                border: 'none', padding: '8px 16px', borderRadius: '20px',
+                                fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer'
+                            }}>Upgrade Plan</button>
                     </div>
                 </div>
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { IconPhone, IconLock, IconGoogle, IconFacebook, IconApple } from './Icons';
 
 const LoginView = ({ onLogin, onNavigate }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -43,7 +44,7 @@ const LoginView = ({ onLogin, onNavigate }) => {
     };
 
     const IconLogo = () => (
-        <svg width="64" height="64" viewBox="0 0 100 100" className="animate-pulse-subtle">
+        <svg width="64" height="64" viewBox="0 0 100 100" className="anim-pulse">
             <path d="M50 15L70 45H30L50 15Z" fill="var(--warning)" />
             <path d="M50 30V80" stroke="var(--primary-dark)" strokeWidth="8" strokeLinecap="round" />
             <path d="M25 55H75" stroke="var(--primary-dark)" strokeWidth="8" strokeLinecap="round" />
@@ -51,60 +52,84 @@ const LoginView = ({ onLogin, onNavigate }) => {
     );
 
     return (
-        <div style={{
+        <div className="mesh-gradient" style={{
             minHeight: '100vh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, var(--primary-light) 0%, #ffffff 100%)',
-            padding: '24px'
+            padding: '24px',
+            position: 'relative',
+            overflow: 'hidden'
         }}>
-            <div className="premium-card glass animate-slide-up" style={{
+            {/* Animated Background Blobs */}
+            <div className="bg-blob" style={{ top: '10%', left: '10%' }}></div>
+            <div className="bg-blob" style={{ bottom: '10%', right: '10%', animationDelay: '-5s', background: 'rgba(99, 102, 241, 0.1)' }}></div>
+
+            <div className="premium-card glass-morphism anim-slide-up" style={{
                 width: '100%',
                 maxWidth: '420px',
                 padding: '48px 32px',
-                border: '1px solid rgba(255,255,255,0.8)'
+                borderRadius: 'var(--radius-2xl)',
+                position: 'relative',
+                zIndex: 1,
+                border: '1px solid rgba(255, 255, 255, 0.4)'
             }}>
                 <div style={{ textAlign: 'center', marginBottom: '40px' }}>
                     <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'center' }}>
-                        <IconLogo />
+                        <div style={{
+                            width: '80px',
+                            height: '80px',
+                            borderRadius: '24px',
+                            background: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: 'var(--shadow-lg)'
+                        }}>
+                            <IconLogo />
+                        </div>
                     </div>
-                    <h1 style={{ fontSize: '28px', marginBottom: '8px', color: 'var(--primary-dark)' }}>Welcome Back</h1>
-                    <p>Sign in to access your health vault</p>
+                    <h1 style={{ fontSize: '32px', marginBottom: '8px', color: 'var(--primary-dark)', fontWeight: '800' }}>Welcome Back</h1>
+                    <p style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>Sign in to access your health vault</p>
                 </div>
 
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     {error && (
-                        <div style={{
-                            padding: '12px',
+                        <div className="anim-shake" style={{
+                            padding: '14px',
                             borderRadius: 'var(--radius-md)',
                             background: 'var(--error-bg)',
                             color: 'var(--error)',
-                            fontSize: '0.9rem',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
                             textAlign: 'center',
-                            border: '1px solid rgba(239, 68, 68, 0.2)'
+                            border: '1px solid rgba(239, 68, 68, 0.1)'
                         }}>
                             {error}
                         </div>
                     )}
 
-                    <div>
+                    <div className="input-premium-wrapper">
                         <label style={{
                             display: 'block',
-                            fontSize: '0.85rem',
-                            fontWeight: '600',
-                            marginBottom: '6px',
-                            color: 'var(--text-secondary)',
+                            fontSize: '0.75rem',
+                            fontWeight: '700',
+                            marginBottom: '8px',
+                            color: 'var(--primary-dark)',
+                            letterSpacing: '0.05em',
                             marginLeft: '4px'
                         }}>PHONE NUMBER</label>
                         <div style={{ position: 'relative' }}>
+                            <div className="input-icon">
+                                <IconPhone />
+                            </div>
                             <span style={{
                                 position: 'absolute',
-                                left: '16px',
+                                left: '44px',
                                 top: '50%',
                                 transform: 'translateY(-50%)',
                                 fontSize: '1rem',
-                                color: 'var(--text-muted)',
+                                color: 'var(--text-main)',
                                 fontWeight: '600'
                             }}>+91</span>
                             <input
@@ -114,54 +139,67 @@ const LoginView = ({ onLogin, onNavigate }) => {
                                 placeholder="98765 43210"
                                 maxLength="10"
                                 className="input-premium"
-                                style={{ paddingLeft: '54px' }}
+                                style={{ paddingLeft: '84px' }}
                                 required
                             />
                         </div>
                     </div>
 
-                    <div>
+                    <div className="input-premium-wrapper">
                         <label style={{
                             display: 'block',
-                            fontSize: '0.85rem',
-                            fontWeight: '600',
-                            marginBottom: '6px',
-                            color: 'var(--text-secondary)',
+                            fontSize: '0.75rem',
+                            fontWeight: '700',
+                            marginBottom: '8px',
+                            color: 'var(--primary-dark)',
+                            letterSpacing: '0.05em',
                             marginLeft: '4px'
                         }}>PASSWORD</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            className="input-premium"
-                            required
-                        />
-                        <div style={{ textAlign: 'right', marginTop: '8px' }}>
+                        <div style={{ position: 'relative' }}>
+                            <div className="input-icon">
+                                <IconLock />
+                            </div>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                className="input-premium"
+                                required
+                            />
+                        </div>
+                        <div style={{ textAlign: 'right', marginTop: '10px' }}>
                             <span style={{
                                 color: 'var(--primary)',
                                 fontSize: '0.85rem',
-                                fontWeight: '600',
-                                cursor: 'pointer'
-                            }}>Forgot Password?</span>
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                transition: 'color 0.2s ease'
+                            }} className="hover-underline">Forgot Password?</span>
                         </div>
                     </div>
 
-                    <button type="submit" className="btn-primary" disabled={isLoading} style={{ marginTop: '12px' }}>
+                    <button type="submit" className="btn btn-primary btn-lg" disabled={isLoading} style={{
+                        marginTop: '8px',
+                        background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
+                        border: 'none',
+                        boxShadow: 'var(--shadow-glow)',
+                        borderRadius: 'var(--radius-lg)'
+                    }}>
                         {isLoading ? 'Verifying...' : 'Sign In'}
                     </button>
 
                     <div style={{
-                        marginTop: '24px',
+                        marginTop: '16px',
                         textAlign: 'center',
-                        fontSize: '0.9rem',
+                        fontSize: '0.95rem',
                         color: 'var(--text-secondary)'
                     }}>
                         New to Medics? <span onClick={() => onNavigate('signup')} style={{
                             color: 'var(--primary)',
-                            fontWeight: '700',
+                            fontWeight: '800',
                             cursor: 'pointer'
-                        }}>Create Account</span>
+                        }} className="hover-underline">Create Account</span>
                     </div>
                 </form>
 
@@ -169,35 +207,60 @@ const LoginView = ({ onLogin, onNavigate }) => {
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '12px',
+                        gap: '16px',
                         color: 'var(--text-muted)',
-                        fontSize: '0.8rem',
-                        marginBottom: '20px'
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        letterSpacing: '0.05em',
+                        marginBottom: '24px'
                     }}>
-                        <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }}></div>
+                        <div style={{ flex: 1, height: '1.5px', background: 'rgba(0,0,0,0.05)' }}></div>
                         <span>OR CONTINUE WITH</span>
-                        <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }}></div>
+                        <div style={{ flex: 1, height: '1.5px', background: 'rgba(0,0,0,0.05)' }}></div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
-                        {['G', 'f', ''].map((icon, i) => (
-                            <button key={i} className="premium-card" style={{
-                                width: '56px',
-                                height: '56px',
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                        {[
+                            { icon: <IconGoogle />, label: 'Google' },
+                            { icon: <IconFacebook />, label: 'Facebook' },
+                            { icon: <IconApple />, label: 'Apple' }
+                        ].map((item, i) => (
+                            <button key={i} className="glass" style={{
+                                width: '64px',
+                                height: '64px',
+                                borderRadius: '20px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: '1.2rem',
-                                color: 'var(--text-main)',
                                 cursor: 'pointer',
-                                padding: 0
+                                padding: 0,
+                                border: '1px solid rgba(255,255,255,0.8)',
+                                transition: 'all 0.3s var(--ease-elastic)',
+                                background: 'rgba(255,255,255,0.5)'
+                            }} onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-4px) scale(1.05)';
+                                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                            }} onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                                e.currentTarget.style.boxShadow = 'none';
                             }}>
-                                {icon}
+                                {item.icon}
                             </button>
                         ))}
                     </div>
                 </div>
             </div>
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .hover-underline:hover { text-decoration: underline; }
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-4px); }
+                    75% { transform: translateX(4px); }
+                }
+                .anim-shake { animation: shake 0.4s ease-in-out; }
+            `}} />
         </div>
     );
 };

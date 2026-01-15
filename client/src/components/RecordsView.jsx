@@ -4,10 +4,15 @@ import { IconHome, IconRecords, IconProfile, IconStyles } from './Icons';
 const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user }) => {
     const [activeTab, setActiveTab] = useState('records');
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
 
-    const filteredDocs = documents.filter(doc =>
-        doc.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const categories = ['All', 'Laboratory', 'Pharmacy', 'Radiology', 'General'];
+
+    const filteredDocs = documents.filter(doc => {
+        const matchesSearch = doc.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === 'All' || doc.category === selectedCategory || (selectedCategory === 'Laboratory' && doc.category === 'General');
+        return matchesSearch && matchesCategory;
+    });
 
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -38,31 +43,49 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user }) =
     };
 
     return (
-        <div style={{ paddingBottom: '100px', background: 'var(--bg-app)', minHeight: '100vh' }}>
-            <header className="premium-header animate-slide-up">
-                <div className="h-top">
-                    <button onClick={onBack} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--text-main)' }}>←</button>
-                    <h3 style={{ fontSize: '1.25rem', margin: 0 }}>Health Records</h3>
+        <div style={{ background: 'var(--bg-app)', minHeight: '100vh', paddingBottom: '100px' }}>
+            <header className="premium-header anim-slide-up" style={{ paddingBottom: '12px' }}>
+                <div className="h-top" style={{ marginBottom: '12px' }}>
+                    <button onClick={onBack} style={{
+                        background: 'var(--bg-app)', border: '1px solid var(--border-subtle)',
+                        width: '40px', height: '40px', borderRadius: '12px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-main)'
+                    }}>←</button>
+                    <h3 style={{ fontSize: '1.25rem', margin: 0, fontWeight: '800' }}>Health Vault</h3>
                     <label style={{
-                        width: '36px', height: '36px', background: 'var(--primary)', color: 'white', borderRadius: '12px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', cursor: 'pointer'
+                        width: '40px', height: '40px', background: 'var(--primary)', color: 'white', borderRadius: '12px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', cursor: 'pointer',
+                        boxShadow: '0 4px 10px rgba(13, 148, 136, 0.3)'
                     }}>
                         <span>+</span>
                         <input type="file" style={{ display: 'none' }} onChange={handleFileUpload} />
                     </label>
                 </div>
 
-                <div className="input-premium" style={{
-                    display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: 'white', marginTop: '12px'
-                }}>
-                    <span style={{ fontSize: '1.2rem', opacity: 0.6 }}>🔍</span>
-                    <input
-                        type="text"
-                        placeholder="Search by report name..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{ border: 'none', outline: 'none', width: '100%', fontSize: '1rem', color: 'var(--text-main)' }}
-                    />
+                <div className="input-premium" style={{ marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span style={{ fontSize: '1.2rem', opacity: 0.6 }}>🔍</span>
+                        <input
+                            type="text"
+                            placeholder="Search records..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{ border: 'none', outline: 'none', width: '100%', fontSize: '1rem', color: 'var(--text-main)', background: 'transparent' }}
+                        />
+                    </div>
+                </div>
+
+                <div className="pill-container" style={{ margin: '0 -24px', padding: '0 24px 8px 24px' }}>
+                    {categories.map(cat => (
+                        <button
+                            key={cat}
+                            onClick={() => setSelectedCategory(cat)}
+                            className={`pill-tab ${selectedCategory === cat ? 'active' : ''}`}
+                        >
+                            {cat}
+                        </button>
+                    ))}
                 </div>
             </header>
 
@@ -101,7 +124,7 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user }) =
                 </div>
             </main>
 
-            <nav className="bottom-nav-p">
+            <nav className="bottom-nav">
                 {[
                     { id: 'dashboard', label: 'Home', icon: <IconHome active={activeTab === 'dashboard' || activeTab === 'home'} /> },
                     { id: 'records', label: 'Records', icon: <IconRecords active={activeTab === 'records'} /> },
@@ -109,7 +132,7 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user }) =
                 ].map(tab => (
                     <div
                         key={tab.id}
-                        className={`nav-item-p ${activeTab === tab.id ? 'active' : ''}`}
+                        className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
                         onClick={() => { setActiveTab(tab.id); onNavigate(tab.id); }}
                     >
                         {tab.icon}
