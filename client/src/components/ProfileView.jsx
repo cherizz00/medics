@@ -60,15 +60,22 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [] }) => 
 
             {/* Glass Header */}
             <header className="header-glass anim-fade-up">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <button onClick={onBack} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--text-main)' }}>←</button>
-                    <h3 style={{ fontSize: '1.125rem', margin: 0 }}>My Profile</h3>
-                    <div style={{ fontSize: '1.25rem' }}>🔔</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
+                    <button onClick={onBack} style={{
+                        background: 'var(--bg-app)', border: '1px solid var(--border-subtle)',
+                        width: '36px', height: '36px', borderRadius: '10px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-main)', flexShrink: 0
+                    }}>←</button>
+                    <h3 style={{ fontSize: '1.125rem', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Personal Profile</h3>
+                    <div style={{ fontSize: '1.25rem', flexShrink: 0 }}>🔔</div>
                 </div>
             </header>
 
+
             {/* Scrollable Content */}
             <main className="scroll-content">
+
 
                 {/* Digital Health Card */}
                 <div className="health-card-premium anim-slide-up" style={{ marginTop: '24px' }}>
@@ -86,17 +93,19 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [] }) => 
                     </div>
 
                     <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                        <div>
-                            <h4 style={{ color: 'white', fontSize: '1.1rem', marginBottom: '2px' }}>{userName}</h4>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                            <h4 style={{ color: 'white', fontSize: '1.1rem', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userName}</h4>
                             <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>Valid thru 12/28</p>
                         </div>
                         <div style={{
-                            padding: '6px 14px', background: 'rgba(255,255,255,0.1)',
-                            borderRadius: '10px', fontSize: '0.75rem', fontWeight: '700',
-                            border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)'
+                            padding: '6px 12px', background: 'rgba(255,255,255,0.1)',
+                            borderRadius: '10px', fontSize: '0.7rem', fontWeight: '700',
+                            border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)',
+                            whiteSpace: 'nowrap', flexShrink: 0
                         }}>
                             PREMIUM GOLD
                         </div>
+
                     </div>
                 </div>
 
@@ -104,18 +113,27 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [] }) => 
 
 
                 {/* Quick Stats Banner - RESTORED & REAL TIME */}
-                <div className="anim-slide-up" style={{ display: 'flex', justifyContent: 'space-between', background: 'white', padding: '20px', borderRadius: '24px', marginTop: '20px', border: '1px solid var(--border-subtle)', animationDelay: '0.1s' }}>
+                <div className="anim-slide-up" style={{
+                    display: 'flex', justifyContent: 'space-between', background: 'white',
+                    padding: '16px', borderRadius: '24px', marginTop: '20px',
+                    border: '1px solid var(--border-subtle)', animationDelay: '0.1s', gap: '8px'
+                }}>
                     {[
-                        { count: documents.length.toString(), label: 'Vault Files', color: 'var(--primary)' },
-                        { count: '4', label: 'Active Shares', color: 'var(--accent)' },
-                        { count: '85', label: 'Health Score', color: 'var(--success)' }
+                        { count: documents.length.toString(), label: 'Vault', color: 'var(--primary)' },
+                        { count: '4', label: 'Shares', color: 'var(--accent)' },
+                        { count: '85', label: 'Score', color: 'var(--success)' }
                     ].map((stat, i) => (
-                        <div key={i} style={{ textAlign: 'center', flex: 1 }}>
-                            <span style={{ fontSize: '1.25rem', fontWeight: '800', color: stat.color, display: 'block' }}>{stat.count}</span>
-                            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>{stat.label}</span>
+                        <div key={i} style={{ textAlign: 'center', flex: 1, minWidth: 0 }}>
+                            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: stat.color, display: 'block' }}>{stat.count}</span>
+                            <span style={{
+                                fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '700',
+                                textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap', display: 'block'
+                            }}>{stat.label}</span>
                         </div>
                     ))}
                 </div>
+
 
                 {/* Family Members Section */}
                 <section className="anim-fade-up" style={{ marginTop: '32px', animationDelay: '0.2s' }}>
@@ -133,25 +151,27 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [] }) => 
 
                     <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingBottom: '8px', scrollbarWidth: 'none', marginLeft: '-4px', paddingLeft: '4px' }}>
                         <div onClick={() => setShowAddModal(true)} style={{
-                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', minWidth: '72px'
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', minWidth: '60px'
                         }}>
                             <div style={{
-                                width: '60px', height: '60px', border: '2px dashed var(--border-medium)', borderRadius: '20px',
+                                width: '52px', height: '52px', border: '2px dashed var(--border-medium)', borderRadius: '18px',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: 'var(--text-muted)',
-                                transition: 'all 0.2s ease'
+                                transition: 'all 0.2s ease', flexShrink: 0
                             }}>+</div>
-                            <span style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Add</span>
+                            <span style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-muted)' }}>Add</span>
                         </div>
 
+
                         {familyMembers.map((m, i) => (
-                            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', minWidth: '72px' }}>
+                            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', minWidth: '60px' }}>
                                 <div style={{
-                                    width: '60px', height: '60px', borderRadius: '20px',
+                                    width: '52px', height: '52px', borderRadius: '18px',
                                     background: m.color || 'var(--bg-card)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem',
                                     fontWeight: '700', color: 'var(--text-main)', boxShadow: 'var(--shadow-sm)',
                                     border: '1px solid var(--border-subtle)',
-                                    position: 'relative'
+                                    position: 'relative',
+                                    flexShrink: 0
                                 }}>
                                     {m.initial}
                                     {isManaging && (
@@ -166,9 +186,10 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [] }) => 
                                         >✕</div>
                                     )}
                                 </div>
-                                <span style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>{m.name}</span>
+                                <span style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-main)', width: '60px', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
                             </div>
                         ))}
+
                     </div>
                 </section>
 
@@ -192,16 +213,17 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [] }) => 
                             <div style={{
                                 width: '44px', height: '44px', borderRadius: '14px', background: 'var(--primary-light)',
                                 color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '1.2rem'
+                                fontSize: '1.2rem', flexShrink: 0
                             }}>
                                 {item.icon}
                             </div>
-                            <div style={{ flex: 1 }}>
-                                <h4 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '2px', color: 'var(--text-main)' }}>{item.title}</h4>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>{item.subtitle}</p>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <h4 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '2px', color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</h4>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.subtitle}</p>
                             </div>
-                            <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)', opacity: 0.5 }}>&rsaquo;</span>
+                            <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)', opacity: 0.5, flexShrink: 0 }}>&rsaquo;</span>
                         </div>
+
                     ))}
 
                     <button className="premium-card" onClick={onLogout} style={{
@@ -212,7 +234,8 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [] }) => 
 
 
                     {/* Spacer for bottom nav */}
-                    <div style={{ height: '80px' }}></div>
+                    <div style={{ height: '140px' }}></div>
+
                 </div>
             </main >
 

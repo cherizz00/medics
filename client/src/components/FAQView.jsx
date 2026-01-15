@@ -36,21 +36,26 @@ const FAQView = ({ onBack }) => {
 
             <IconStyles />
             <header className="premium-header anim-slide-up">
-                <div className="h-top" style={{ marginBottom: 0 }}>
+                <div className="h-top" style={{ marginBottom: 0, gap: '16px' }}>
                     <button onClick={onBack} style={{
                         background: 'var(--bg-app)', border: '1px solid var(--border-subtle)',
-                        width: '40px', height: '40px', borderRadius: '12px',
+                        width: '36px', height: '36px', borderRadius: '10px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-main)'
+                        fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-main)', flexShrink: 0
                     }}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
                     </button>
-                    <h3 style={{ fontSize: '1.25rem', margin: 0, fontWeight: '800' }}>Help & Support</h3>
-                    <div style={{ width: 40 }}></div>
+                    <h3 style={{
+                        fontSize: '1.2rem', margin: 0, fontWeight: '800',
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1
+                    }}>Help & Support</h3>
+                    <div style={{ width: 36, flexShrink: 0 }}></div>
                 </div>
             </header>
 
-            <main style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+            <main className="scroll-content" style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
                 {faqs.map((item, i) => (
                     <div
                         key={i}
@@ -62,13 +67,15 @@ const FAQView = ({ onBack }) => {
                         }}
                         onClick={() => toggleFAQ(i)}
                     >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
                             <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-main)', margin: 0, flex: 1 }}>{item.q}</h4>
                             <span style={{
                                 fontSize: '1.5rem', color: activeIndex === i ? 'var(--primary)' : 'var(--text-muted)',
-                                transition: '0.3s', transform: activeIndex === i ? 'rotate(90deg)' : 'rotate(0deg)'
+                                transition: '0.3s', transform: activeIndex === i ? 'rotate(90deg)' : 'rotate(0deg)',
+                                flexShrink: 0
                             }}>›</span>
                         </div>
+
                         {activeIndex === i && (
                             <div className="animate-slide-up" style={{
                                 fontSize: '0.9rem', color: 'var(--text-body)', lineHeight: '1.6',

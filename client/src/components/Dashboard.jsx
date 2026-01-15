@@ -64,21 +64,27 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
 
                 <div onClick={() => onNavigate('profile')} style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer',
-                    marginTop: '8px', marginBottom: '20px'
+                    marginTop: '8px', marginBottom: '20px', gap: '16px'
                 }}>
-                    <div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Welcome back,</p>
-                        <h3 style={{ fontSize: '1.75rem', color: 'var(--text-main)', margin: '4px 0', letterSpacing: '-0.03em' }}>{userName}</h3>
+                        <h3 style={{
+                            fontSize: '1.75rem', color: 'var(--text-main)', margin: '4px 0',
+                            letterSpacing: '-0.03em', overflow: 'hidden', textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                        }}>{userName}</h3>
                     </div>
                     <div style={{
-                        width: '60px', height: '60px', borderRadius: '22px',
+                        width: '56px', height: '56px', borderRadius: '20px',
                         background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
                         color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '1.4rem', fontWeight: '800', boxShadow: 'var(--shadow-lg)'
+                        fontSize: '1.25rem', fontWeight: '800', boxShadow: 'var(--shadow-lg)',
+                        flexShrink: 0
                     }}>
                         {userInitials}
                     </div>
                 </div>
+
 
                 <div className="input-premium" style={{ marginBottom: '8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -90,7 +96,8 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
                 </div>
             </header>
 
-            <main style={{ flex: 1, overflowY: 'auto', padding: '24px', paddingBottom: '100px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <main className="scroll-content" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
 
 
                 <section className="premium-card anim-slide-up" style={{
@@ -135,17 +142,23 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
                                     width: '52px', height: '52px', borderRadius: '14px',
                                     background: i % 2 === 0 ? 'var(--primary-subtle)' : 'var(--accent-light)',
                                     color: i % 2 === 0 ? 'var(--primary)' : 'var(--accent)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem'
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem',
+                                    flexShrink: 0
                                 }}>
                                     {i % 2 === 0 ? '📄' : '📜'}
                                 </div>
-                                <div style={{ flex: 1 }}>
-                                    <h4 style={{ fontSize: '1rem', marginBottom: '4px', fontWeight: '700' }}>{doc.title}</h4>
+
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <h4 style={{
+                                        fontSize: '1rem', marginBottom: '4px', fontWeight: '700',
+                                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                                    }}>{doc.title}</h4>
                                     <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
                                         {doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : (doc.date || 'Today')} &bull; {doc.size || '0.0 MB'}
                                     </p>
                                 </div>
-                                <div style={{ color: 'var(--text-muted)', fontSize: '1.5rem' }}>&rsaquo;</div>
+                                <div style={{ color: 'var(--text-muted)', fontSize: '1.5rem', flexShrink: 0 }}>&rsaquo;</div>
+
                             </div>
                         ))}
 
@@ -154,8 +167,7 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
 
 
 
-                {/* Spacer for bottom nav */}
-                <div style={{ height: '120px', flexShrink: 0 }}></div>
+
             </main>
 
             <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} />

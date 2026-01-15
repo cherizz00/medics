@@ -68,8 +68,9 @@ const LoginView = ({ onLogin, onNavigate }) => {
             <div className="premium-card glass-morphism anim-slide-up" style={{
                 width: '100%',
                 maxWidth: '420px',
-                padding: '48px 32px',
+                padding: 'min(48px, 10%) min(32px, 8%)',
                 borderRadius: 'var(--radius-2xl)',
+
                 position: 'relative',
                 zIndex: 1,
                 border: '1px solid rgba(255, 255, 255, 0.4)'
@@ -89,8 +90,9 @@ const LoginView = ({ onLogin, onNavigate }) => {
                             <IconLogo />
                         </div>
                     </div>
-                    <h1 style={{ fontSize: '32px', marginBottom: '8px', color: 'var(--primary-dark)', fontWeight: '800' }}>Welcome Back</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>Sign in to access your health vault</p>
+                    <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', marginBottom: '8px', color: 'var(--primary-dark)', fontWeight: '800' }}>Welcome Back</h1>
+                    <p style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.9rem' }}>Sign in to access your health vault</p>
+
                 </div>
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>

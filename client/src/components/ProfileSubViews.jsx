@@ -4,20 +4,24 @@ import { IconStyles } from './Icons';
 // Shared Header Component for consistency
 const SubHeader = ({ title, onBack }) => (
     <header className="premium-header anim-slide-up">
-        <div className="h-top" style={{ marginBottom: 0 }}>
+        <div className="h-top" style={{ marginBottom: 0, gap: '16px' }}>
             <button onClick={onBack} style={{
                 background: 'var(--bg-app)', border: '1px solid var(--border-subtle)',
-                width: '40px', height: '40px', borderRadius: '12px',
+                width: '36px', height: '36px', borderRadius: '10px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-main)'
+                fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-main)', flexShrink: 0
             }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
             </button>
-            <h3 style={{ fontSize: '1.25rem', margin: 0, fontWeight: '800' }}>{title}</h3>
-            <div style={{ width: 40 }}></div>
+            <h3 style={{
+                fontSize: '1.2rem', margin: 0, fontWeight: '800',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1
+            }}>{title}</h3>
+            <div style={{ width: 36, flexShrink: 0 }}></div>
         </div>
     </header>
 );
+
 
 export const SharedAccessView = ({ onBack }) => {
     const [shares, setShares] = useState([
@@ -30,7 +34,8 @@ export const SharedAccessView = ({ onBack }) => {
 
 
             <SubHeader title="Shared Access" onBack={onBack} />
-            <main style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <main className="scroll-content" style={{ padding: '24px 0', gap: '20px', display: 'flex', flexDirection: 'column' }}>
+
                 <div className="anim-slide-up" style={{
                     background: 'var(--primary-light)', padding: '18px', borderRadius: '20px',
                     display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--primary-dark)',
@@ -45,14 +50,15 @@ export const SharedAccessView = ({ onBack }) => {
                     {shares.map(share => (
                         <div key={share.id} className="premium-card" style={{ padding: '20px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                                <div>
-                                    <h4 style={{ fontSize: '1rem', marginBottom: '4px', color: 'var(--text-main)' }}>{share.name}</h4>
-                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{share.hospital}</p>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <h4 style={{ fontSize: '1rem', marginBottom: '4px', color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{share.name}</h4>
+                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{share.hospital}</p>
                                 </div>
                                 <span style={{
                                     background: '#DCFCE7', color: '#166534', padding: '4px 10px',
-                                    borderRadius: '12px', fontSize: '0.75rem', fontWeight: '700'
+                                    borderRadius: '12px', fontSize: '0.75rem', fontWeight: '700', flexShrink: 0
                                 }}>{share.status}</span>
+
                             </div>
                             <div style={{ height: '1px', background: 'var(--border-light)', margin: '12px 0' }}></div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -102,7 +108,8 @@ export const SecurityView = ({ onBack }) => {
 
 
             <SubHeader title="Security Settings" onBack={onBack} />
-            <main style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <main className="scroll-content" style={{ padding: '24px 0', gap: '16px', display: 'flex', flexDirection: 'column' }}>
+
                 <div className="premium-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                         <h4 style={{ fontSize: '1rem', color: 'var(--text-main)', marginBottom: '4px' }}>Biometric Login</h4>
@@ -141,7 +148,8 @@ export const StorageView = ({ onBack }) => {
 
 
             <SubHeader title="Storage Usage" onBack={onBack} />
-            <main style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <main className="scroll-content" style={{ padding: '24px 0', gap: '24px', display: 'flex', flexDirection: 'column' }}>
+
                 <div className="premium-card" style={{
                     padding: '32px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px'
                 }}>
@@ -174,36 +182,42 @@ export const StorageView = ({ onBack }) => {
                         <div className="premium-card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                             <span style={{
                                 width: '40px', height: '40px', borderRadius: '10px', background: '#E3F2FD',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem',
+                                flexShrink: 0
                             }}>📄</span>
-                            <div style={{ flex: 1 }}>
-                                <h4 style={{ fontSize: '1rem', color: 'var(--text-main)' }}>Lab Reports</h4>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <h4 style={{ fontSize: '1rem', color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Lab Reports</h4>
                                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>1.2 GB</p>
                             </div>
-                            <span style={{ fontWeight: '700', color: 'var(--text-muted)', fontSize: '0.85rem' }}>50%</span>
+                            <span style={{ fontWeight: '700', color: 'var(--text-muted)', fontSize: '0.85rem', flexShrink: 0 }}>50%</span>
                         </div>
+
                         <div className="premium-card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                             <span style={{
                                 width: '40px', height: '40px', borderRadius: '10px', background: '#E8F5E9',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem',
+                                flexShrink: 0
                             }}>🖼️</span>
-                            <div style={{ flex: 1 }}>
-                                <h4 style={{ fontSize: '1rem', color: 'var(--text-main)' }}>Scans (X-Ray, MRI)</h4>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <h4 style={{ fontSize: '1rem', color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Scans (X-Ray, MRI)</h4>
                                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>800 MB</p>
                             </div>
-                            <span style={{ fontWeight: '700', color: 'var(--text-muted)', fontSize: '0.85rem' }}>35%</span>
+                            <span style={{ fontWeight: '700', color: 'var(--text-muted)', fontSize: '0.85rem', flexShrink: 0 }}>35%</span>
                         </div>
+
                         <div className="premium-card" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                             <span style={{
                                 width: '40px', height: '40px', borderRadius: '10px', background: '#FFF3E0',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem',
+                                flexShrink: 0
                             }}>💊</span>
-                            <div style={{ flex: 1 }}>
-                                <h4 style={{ fontSize: '1rem', color: 'var(--text-main)' }}>Prescriptions</h4>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <h4 style={{ fontSize: '1rem', color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Prescriptions</h4>
                                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>250 MB</p>
                             </div>
-                            <span style={{ fontWeight: '700', color: 'var(--text-muted)', fontSize: '0.85rem' }}>15%</span>
+                            <span style={{ fontWeight: '700', color: 'var(--text-muted)', fontSize: '0.85rem', flexShrink: 0 }}>15%</span>
                         </div>
+
                     </div>
                 </div>
             </main>

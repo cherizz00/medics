@@ -49,23 +49,24 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user }) =
 
 
             <header className="premium-header anim-slide-up" style={{ paddingBottom: '12px' }}>
-                <div className="h-top" style={{ marginBottom: '12px' }}>
+                <div className="h-top" style={{ marginBottom: '12px', gap: '12px' }}>
                     <button onClick={onBack} style={{
                         background: 'var(--bg-app)', border: '1px solid var(--border-subtle)',
-                        width: '40px', height: '40px', borderRadius: '12px',
+                        width: '36px', height: '36px', borderRadius: '10px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-main)'
+                        fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-main)', flexShrink: 0
                     }}>←</button>
-                    <h3 style={{ fontSize: '1.25rem', margin: 0, fontWeight: '800' }}>Health Vault</h3>
+                    <h3 style={{ fontSize: '1.2rem', margin: 0, fontWeight: '800', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Health Vault</h3>
                     <label style={{
-                        width: '40px', height: '40px', background: 'var(--primary)', color: 'white', borderRadius: '12px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', cursor: 'pointer',
-                        boxShadow: '0 4px 10px rgba(13, 148, 136, 0.3)'
+                        width: '36px', height: '36px', background: 'var(--primary)', color: 'white', borderRadius: '10px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', cursor: 'pointer',
+                        boxShadow: '0 4px 10px rgba(13, 148, 136, 0.3)', flexShrink: 0
                     }}>
                         <span>+</span>
                         <input type="file" style={{ display: 'none' }} onChange={handleFileUpload} />
                     </label>
                 </div>
+
 
                 <div className="input-premium" style={{ marginBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -93,7 +94,8 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user }) =
                 </div>
             </header>
 
-            <main style={{ padding: '24px' }}>
+            <main className="scroll-content">
+
                 <div className="scroll-area" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {filteredDocs.length > 0 ? filteredDocs.map((doc, i) => (
                         <div key={doc._id || doc.id} className="premium-card animate-fade" style={{
@@ -103,23 +105,29 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user }) =
                                 <div style={{
                                     width: '48px', height: '48px', borderRadius: '12px',
                                     background: 'var(--primary-light)', color: 'var(--primary)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem',
+                                    flexShrink: 0
                                 }}>
                                     <IconRecords active={false} />
                                 </div>
-                                <div>
-                                    <h4 style={{ fontSize: '1rem', marginBottom: '4px', color: 'var(--text-main)' }}>{doc.title}</h4>
+
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <h4 style={{
+                                        fontSize: '1rem', marginBottom: '4px', color: 'var(--text-main)',
+                                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                                    }}>{doc.title}</h4>
                                     <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                                         {doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : doc.date} &bull; {doc.size || '0.0 MB'}
                                     </p>
                                 </div>
                             </div>
                             <button onClick={() => onDelete(doc._id || doc.id)} style={{
-
                                 background: 'var(--error-bg)', color: 'var(--error)', border: 'none',
                                 width: '36px', height: '36px', borderRadius: '12px',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                                flexShrink: 0
                             }}>
+
                                 🗑️
                             </button>
                         </div>
