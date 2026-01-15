@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { IconHome, IconRecords, IconProfile, IconHospital, IconMedicine, IconLab, IconInsurance, IconQuery, IconStyles } from './Icons';
 
-const ProfileView = ({ onBack, onNavigate, onLogout, user }) => {
+const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [] }) => {
+
 
     const [activeTab, setActiveTab] = useState('profile');
     const [showAddModal, setShowAddModal] = useState(false);
@@ -99,10 +100,13 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user }) => {
                     </div>
                 </div>
 
-                {/* Quick Stats Banner */}
+
+
+
+                {/* Quick Stats Banner - RESTORED & REAL TIME */}
                 <div className="anim-slide-up" style={{ display: 'flex', justifyContent: 'space-between', background: 'white', padding: '20px', borderRadius: '24px', marginTop: '20px', border: '1px solid var(--border-subtle)', animationDelay: '0.1s' }}>
                     {[
-                        { count: '12', label: 'Vault Files', color: 'var(--primary)' },
+                        { count: documents.length.toString(), label: 'Vault Files', color: 'var(--primary)' },
                         { count: '4', label: 'Active Shares', color: 'var(--accent)' },
                         { count: '85', label: 'Health Score', color: 'var(--success)' }
                     ].map((stat, i) => (
@@ -114,7 +118,9 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user }) => {
                 </div>
 
                 {/* Family Members Section */}
-                <section className="anim-fade-up anim-delay-1" style={{ marginTop: '32px' }}>
+                <section className="anim-fade-up" style={{ marginTop: '32px', animationDelay: '0.2s' }}>
+
+
                     <div className="section-title">
                         <h3>Connected Profiles</h3>
                         <span
@@ -168,6 +174,7 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user }) => {
 
                 {/* Menu Items */}
                 <div className="anim-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '24px', animationDelay: '0.2s' }}>
+
                     {menuItems.map((item, i) => (
                         <div
                             key={i}
@@ -178,6 +185,7 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user }) => {
                                 if (item.title === 'Shared Access') onNavigate('shared');
                                 if (item.title === 'Security Settings') onNavigate('security');
                                 if (item.title === 'Storage Usage') onNavigate('storage');
+
                                 if (item.title === 'Help & Support') onNavigate('faq');
                             }}
                         >
@@ -206,25 +214,27 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user }) => {
                     {/* Spacer for bottom nav */}
                     <div style={{ height: '80px' }}></div>
                 </div>
-            </main>
+            </main >
 
             {/* Bottom Nav */}
-            <nav className="bottom-nav">
-                {[
-                    { id: 'dashboard', label: 'Home', icon: <IconHome active={activeTab === 'dashboard' || activeTab === 'home'} /> },
-                    { id: 'records', label: 'Records', icon: <IconRecords active={activeTab === 'records'} /> },
-                    { id: 'profile', label: 'Profile', icon: <IconProfile active={activeTab === 'profile'} /> }
-                ].map(tab => (
-                    <div
-                        key={tab.id}
-                        className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
-                        onClick={() => { setActiveTab(tab.id); onNavigate(tab.id); }}
-                    >
-                        {tab.icon}
-                        <span>{tab.label}</span>
-                    </div>
-                ))}
-            </nav>
+            < nav className="bottom-nav" >
+                {
+                    [
+                        { id: 'dashboard', label: 'Home', icon: <IconHome active={activeTab === 'dashboard' || activeTab === 'home'} /> },
+                        { id: 'records', label: 'Records', icon: <IconRecords active={activeTab === 'records'} /> },
+                        { id: 'profile', label: 'Profile', icon: <IconProfile active={activeTab === 'profile'} /> }
+                    ].map(tab => (
+                        <div
+                            key={tab.id}
+                            className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
+                            onClick={() => { setActiveTab(tab.id); onNavigate(tab.id); }}
+                        >
+                            {tab.icon}
+                            <span>{tab.label}</span>
+                        </div>
+                    ))
+                }
+            </nav >
 
 
             {/* Add Member Modal */}
@@ -283,7 +293,7 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user }) => {
                     </div>
                 )
             }
-        </div>
+        </div >
     );
 };
 

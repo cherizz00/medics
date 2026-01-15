@@ -32,7 +32,8 @@ const FAQView = ({ onBack }) => {
     };
 
     return (
-        <div style={{ background: 'var(--bg-app)', minHeight: '100vh' }}>
+        <div className="page-container">
+
             <IconStyles />
             <header className="premium-header anim-slide-up">
                 <div className="h-top" style={{ marginBottom: 0 }}>

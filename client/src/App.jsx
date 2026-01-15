@@ -16,25 +16,76 @@ function App() {
     const savedUser = localStorage.getItem('medics_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
-  const [documents, setDocuments] = useState(() => {
-    const saved = localStorage.getItem('medics_docs');
-    return saved ? JSON.parse(saved) : [
-      { id: 1, title: 'Full Blood Count', date: '2023-12-01', size: '1.2 MB', category: 'General' },
-      { id: 2, title: 'Pharmacy Receipt', date: '2023-11-20', size: '0.8 MB', category: 'Pharma' }
-    ];
-  });
+  const [documents, setDocuments] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem('medics_docs', JSON.stringify(documents));
-  }, [documents]);
+    if (user) {
+      fetchDocuments();
+    }
+  }, [user]);
 
-  const addDocument = (newDoc) => {
-    setDocuments(prev => [newDoc, ...prev]);
+  const fetchDocuments = async () => {
+    try {
+      const token = localStorage.getItem('medics_token');
+      const response = await fetch('/api/documents', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDocuments(data);
+      }
+    } catch (err) {
+      console.error('Fetch Documents Error:', err);
+    }
   };
 
-  const deleteDocument = (id) => {
-    setDocuments(prev => prev.filter(doc => doc.id !== id));
+  const addDocument = async (newDoc) => {
+    try {
+      const token = localStorage.getItem('medics_token');
+      const response = await fetch('/api/documents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          title: newDoc.title,
+          fileUrl: newDoc.url || newDoc.fileUrl,
+          category: newDoc.category,
+          size: newDoc.size
+        })
+
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDocuments(prev => [data, ...prev]);
+        alert('File uploaded to vault successfully!');
+      } else {
+        const errorData = await response.json();
+        alert(`Upload failed: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (err) {
+      console.error('Add Document Error:', err);
+      alert('Connection error. Please check if the server is running.');
+    }
+
   };
+
+  const deleteDocument = async (id) => {
+    try {
+      const token = localStorage.getItem('medics_token');
+      const response = await fetch(`/api/documents/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        setDocuments(prev => prev.filter(doc => (doc._id || doc.id) !== id));
+      }
+    } catch (err) {
+      console.error('Delete Document Error:', err);
+    }
+  };
+
 
   useEffect(() => {
     // Check for auto-login
@@ -91,7 +142,8 @@ function App() {
             onAdd={addDocument}
           />
         )}
-        {currentStep === 'profile' && <ProfileView user={user} onBack={() => setCurrentStep('dashboard')} onLogout={handleLogout} onNavigate={(step) => setCurrentStep(step)} />}
+        {currentStep === 'profile' && <ProfileView user={user} documents={documents} onBack={() => setCurrentStep('dashboard')} onLogout={handleLogout} onNavigate={(step) => setCurrentStep(step)} />}
+
         {currentStep === 'records' && (
           <RecordsView
             user={user}

@@ -28,19 +28,26 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
     };
 
     const openDocument = (doc) => {
-        if (doc.url) {
+        const url = doc.fileUrl || doc.url;
+        if (url) {
             const newWindow = window.open();
-            newWindow.document.write(`<iframe src="${doc.url}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+            if (newWindow) {
+                newWindow.document.write(`<iframe src="${url}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+            } else {
+                alert("Please allow popups to view documents.");
+            }
         } else {
-            alert("This document is a placeholder for the demo.");
+            alert("This document cannot be opened at the moment.");
         }
     };
+
 
     const IconStyles = () => null; // Icons are now global or handled via components, keeping for structure if needed but empty
 
     return (
-        <div style={{ height: '100vh', background: 'var(--bg-app)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="page-container">
             <header className="premium-header anim-slide-up" style={{ flexShrink: 0 }}>
+
                 <div className="h-top">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-secondary)' }}>
                         <span style={{ color: 'var(--primary)', fontSize: '1.2rem' }}>📍</span> Mumbai Central
@@ -85,57 +92,13 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
 
             <main style={{ flex: 1, overflowY: 'auto', padding: '24px', paddingBottom: '100px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
-                {/* Health Vitals */}
-                <section className="anim-slide-up" style={{ animationDelay: '0.1s' }}>
-                    <div className="section-title">
-                        <h3>Health Vitals</h3>
-                        <span style={{ color: 'var(--primary)', fontWeight: '600', fontSize: '0.9rem' }}>Details</span>
-                    </div>
-                    <div className="pill-container" style={{ marginLeft: '-4px', paddingLeft: '4px' }}>
-                        {[
-                            { label: 'Blood Pressure', value: '120/80', unit: 'mmHg', color: '#FEF2F2', icon: '❤️' },
-                            { label: 'Heart Rate', value: '72', unit: 'bpm', color: '#F0F9FF', icon: '⚡' },
-                            { label: 'Sugar Level', value: '94', unit: 'mg/dL', color: '#F0FDF4', icon: '🩸' }
-                        ].map((vital, i) => (
-                            <div key={i} className="premium-card" style={{
-                                minWidth: '130px', padding: '16px', background: vital.color, border: 'none',
-                                display: 'flex', flexDirection: 'column', gap: '8px'
-                            }}>
-                                <span style={{ fontSize: '1.2rem' }}>{vital.icon}</span>
-                                <h4 style={{ fontSize: '1.125rem', margin: 0 }}>{vital.value}</h4>
-                                <p style={{ fontSize: '0.75rem', fontWeight: '600', textTransform: 'uppercase', opacity: 0.7 }}>{vital.label}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Quick Services */}
-                <section className="anim-slide-up" style={{ animationDelay: '0.2s' }}>
-                    <div className="section-title">
-                        <h3>Quick Services</h3>
-                    </div>
-                    <div className="service-grid">
-                        {[
-                            { label: 'Doctors', icon: '👨‍⚕️', color: 'var(--primary-subtle)' },
-                            { label: 'Pharmacy', icon: '💊', color: '#FFF7ED' },
-                            { label: 'Lab Tests', icon: '🔬', color: '#F0FDFA' },
-                            { label: 'Ambulance', icon: '🚑', color: '#FEF2F2' }
-                        ].map((s, i) => (
-                            <div key={i} className="service-item">
-                                <div className="service-icon-wrap" style={{ background: s.color }}>
-                                    {s.icon}
-                                </div>
-                                <span className="service-label">{s.label}</span>
-                            </div>
-                        ))}
-                    </div>
-                </section>
 
                 <section className="premium-card anim-slide-up" style={{
                     background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
                     color: 'white', padding: '24px', position: 'relative', overflow: 'hidden',
-                    border: 'none', flexShrink: 0, animationDelay: '0.3s'
+                    border: 'none', flexShrink: 0, animationDelay: '0.1s'
                 }} onClick={() => fileInputRef.current.click()}>
+
                     <div style={{ position: 'relative', zIndex: 10 }}>
                         <div style={{
                             width: '48px', height: '48px', background: 'rgba(255,255,255,0.2)',
@@ -155,7 +118,8 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
                     <div style={{ position: 'absolute', top: '-10px', right: '-10px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}></div>
                 </section>
 
-                <section className="anim-slide-up" style={{ animationDelay: '0.4s', flexShrink: 0 }}>
+                <section className="anim-slide-up" style={{ animationDelay: '0.2s', flexShrink: 0 }}>
+
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                         <h3 style={{ fontSize: '1.25rem' }}>Recent Records</h3>
                         <span onClick={() => onNavigate('records')} style={{
@@ -164,7 +128,7 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {documents.map((doc, i) => (
-                            <div key={i} className="premium-card" onClick={() => openDocument(doc)} style={{
+                            <div key={doc._id || doc.id || i} className="premium-card" onClick={() => openDocument(doc)} style={{
                                 padding: '16px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer'
                             }}>
                                 <div style={{
@@ -177,11 +141,14 @@ const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
                                 </div>
                                 <div style={{ flex: 1 }}>
                                     <h4 style={{ fontSize: '1rem', marginBottom: '4px', fontWeight: '700' }}>{doc.title}</h4>
-                                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>{doc.date} &bull; {doc.size}</p>
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
+                                        {doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : (doc.date || 'Today')} &bull; {doc.size || '0.0 MB'}
+                                    </p>
                                 </div>
                                 <div style={{ color: 'var(--text-muted)', fontSize: '1.5rem' }}>&rsaquo;</div>
                             </div>
                         ))}
+
                     </div>
                 </section>
 

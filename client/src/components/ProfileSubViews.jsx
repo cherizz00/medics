@@ -26,7 +26,9 @@ export const SharedAccessView = ({ onBack }) => {
     ]);
 
     return (
-        <div style={{ background: 'var(--bg-app)', minHeight: '100vh' }}>
+        <div className="page-container">
+
+
             <SubHeader title="Shared Access" onBack={onBack} />
             <main style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div className="anim-slide-up" style={{
@@ -96,7 +98,9 @@ export const SecurityView = ({ onBack }) => {
     );
 
     return (
-        <div style={{ background: 'var(--bg-app)', minHeight: '100vh' }}>
+        <div className="page-container">
+
+
             <SubHeader title="Security Settings" onBack={onBack} />
             <main style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div className="premium-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -133,7 +137,9 @@ export const SecurityView = ({ onBack }) => {
 
 export const StorageView = ({ onBack }) => {
     return (
-        <div style={{ background: 'var(--bg-app)', minHeight: '100vh' }}>
+        <div className="page-container">
+
+
             <SubHeader title="Storage Usage" onBack={onBack} />
             <main style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 <div className="premium-card" style={{

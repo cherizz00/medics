@@ -34,16 +34,20 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user }) =
     };
 
     const openDocument = (doc) => {
-        if (doc.url) {
+        const url = doc.fileUrl || doc.url;
+        if (url) {
             const newWindow = window.open();
-            newWindow.document.write(`<iframe src="${doc.url}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+            newWindow.document.write(`<iframe src="${url}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
         } else {
-            alert("This is a placeholder document.");
+            alert("This document cannot be opened at the moment.");
         }
     };
 
+
     return (
-        <div style={{ background: 'var(--bg-app)', minHeight: '100vh', paddingBottom: '100px' }}>
+        <div className="page-container">
+
+
             <header className="premium-header anim-slide-up" style={{ paddingBottom: '12px' }}>
                 <div className="h-top" style={{ marginBottom: '12px' }}>
                     <button onClick={onBack} style={{
@@ -92,7 +96,7 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user }) =
             <main style={{ padding: '24px' }}>
                 <div className="scroll-area" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {filteredDocs.length > 0 ? filteredDocs.map((doc, i) => (
-                        <div key={doc.id} className="premium-card animate-fade" style={{
+                        <div key={doc._id || doc.id} className="premium-card animate-fade" style={{
                             padding: '16px', display: 'flex', alignItems: 'center', gap: '16px', animationDelay: `${i * 0.05}s`
                         }}>
                             <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer' }} onClick={() => openDocument(doc)}>
@@ -105,10 +109,13 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user }) =
                                 </div>
                                 <div>
                                     <h4 style={{ fontSize: '1rem', marginBottom: '4px', color: 'var(--text-main)' }}>{doc.title}</h4>
-                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{doc.date} &bull; {doc.size}</p>
+                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                        {doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : doc.date} &bull; {doc.size || '0.0 MB'}
+                                    </p>
                                 </div>
                             </div>
-                            <button onClick={() => onDelete(doc.id)} style={{
+                            <button onClick={() => onDelete(doc._id || doc.id)} style={{
+
                                 background: 'var(--error-bg)', color: 'var(--error)', border: 'none',
                                 width: '36px', height: '36px', borderRadius: '12px',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'

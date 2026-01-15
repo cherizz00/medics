@@ -5,7 +5,9 @@ const documentSchema = new mongoose.Schema({
     title: { type: String, required: true },
     fileUrl: { type: String, required: true },
     category: { type: String, default: 'General' },
+    size: { type: String, default: '0.0 MB' },
     uploadedAt: { type: Date, default: Date.now }
+
 });
 
 const Document = mongoose.model('Document', documentSchema);
