@@ -1,268 +1,246 @@
 import React, { useState } from 'react';
-import { IconPhone, IconLock, IconGoogle, IconFacebook, IconApple } from './Icons';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { IconPhone, IconLock, IconGoogle, IconFacebook, IconApple, IconLogo, IconSparkles, IconChevronLeft } from './Icons';
 
 const LoginView = ({ onLogin, onNavigate }) => {
+    const [step, setStep] = useState('phone'); // 'phone' | 'otp'
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [password, setPassword] = useState('');
+    const [otp, setOtp] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [devNote, setDevNote] = useState('');
+    const [language, setLanguage] = useState('English');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    // Initialize Google Auth
+    React.useEffect(() => {
+        GoogleAuth.initialize({
+            clientId: '943010689340-8os3kgsghuc020gq917eqto7n4p50gaf.apps.googleusercontent.com',
+            scopes: ['profile', 'email'],
+            grantOfflineAccess: true,
+        });
+    }, []);
+
+    const handleGoogleLogin = async () => {
         setIsLoading(true);
         setError('');
-
         try {
-            const response = await fetch('/api/auth/login', {
+            const googleUser = await GoogleAuth.signIn();
+            const idToken = googleUser.authentication.idToken;
+
+            // Use configured API URL or fallback for Android local testing
+            // Note: For Android Emulator use 10.0.2.2 instead of localhost
+            const API_URL = import.meta.env.VITE_API_URL || '/api';
+
+            const response = await fetch(`${API_URL}/auth/google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phoneNumber, password }),
+                body: JSON.stringify({ token: idToken }),
             });
-
-            let data;
-            const text = await response.text();
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                console.error('SERVER RESPONSE WAS NOT JSON:', text);
-                throw new Error('Server issues. Please try again.');
-            }
-
+            const data = await response.json();
             if (response.ok) {
                 localStorage.setItem('medics_token', data.token);
                 localStorage.setItem('medics_user', JSON.stringify(data.user));
                 onLogin(data.user);
             } else {
-                setError(data.message || 'Login failed');
+                setError(data.message || 'Google Login Failed');
             }
         } catch (err) {
-            console.error('Login Error:', err);
+            console.error(err);
+            setError(`Google Auth Error: ${err.message || JSON.stringify(err)}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSendOTP = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+        try {
+            const response = await fetch('/api/auth/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phoneNumber }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setStep('otp');
+                if (data.dev_note) setDevNote(data.dev_note);
+            } else {
+                setError(data.message || 'Failed to send OTP');
+            }
+        } catch (err) {
             setError(`Connection Error: ${err.message}`);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const IconLogo = () => (
-        <svg width="64" height="64" viewBox="0 0 100 100" className="anim-pulse">
-            <path d="M50 15L70 45H30L50 15Z" fill="var(--warning)" />
-            <path d="M50 30V80" stroke="var(--primary-dark)" strokeWidth="8" strokeLinecap="round" />
-            <path d="M25 55H75" stroke="var(--primary-dark)" strokeWidth="8" strokeLinecap="round" />
-        </svg>
-    );
+    const handleVerifyOTP = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+        try {
+            const response = await fetch('/api/auth/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phoneNumber, otp }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('medics_token', data.token);
+                localStorage.setItem('medics_user', JSON.stringify(data.user));
+                onLogin(data.user);
+            } else {
+                setError(data.message || 'Invalid OTP');
+            }
+        } catch (err) {
+            setError(`Connection Error: ${err.message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
-        <div className="mesh-gradient" style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '24px',
-            position: 'relative',
-            overflow: 'hidden'
-        }}>
-            {/* Animated Background Blobs */}
-            <div className="bg-blob" style={{ top: '10%', left: '10%' }}></div>
-            <div className="bg-blob" style={{ bottom: '10%', right: '10%', animationDelay: '-5s', background: 'rgba(99, 102, 241, 0.1)' }}></div>
+        <div className="page-container flex-center" style={{ background: 'white', padding: '24px' }}>
+            {/* Language Selector */}
+            <div style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 10 }}>
+                <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    className="input-field"
+                    style={{ padding: '8px 16px', fontSize: '0.85rem', width: 'auto', borderRadius: '12px', border: '1px solid var(--border)' }}
+                >
+                    <option value="English">English</option>
+                    <option value="Hindi">हिंदी</option>
+                </select>
+            </div>
 
-            <div className="premium-card glass-morphism anim-slide-up" style={{
-                width: '100%',
-                maxWidth: '420px',
-                padding: 'min(48px, 10%) min(32px, 8%)',
-                borderRadius: 'var(--radius-2xl)',
+            <div className="medical-card animate-fade" style={{ width: '100%', maxWidth: '400px', padding: '40px 32px', borderRadius: '28px', border: '1px solid #F1F5F9', position: 'relative', overflow: 'hidden' }}>
+                <div className="holographic-glow" style={{ opacity: 0.05 }} />
 
-                position: 'relative',
-                zIndex: 1,
-                border: '1px solid rgba(255, 255, 255, 0.4)'
-            }}>
-                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                    <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'center' }}>
-                        <div style={{
-                            width: '80px',
-                            height: '80px',
-                            borderRadius: '24px',
-                            background: 'white',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: 'var(--shadow-lg)'
-                        }}>
-                            <IconLogo />
+                <div style={{ textAlign: 'center', marginBottom: '40px', position: 'relative', zIndex: 1 }}>
+                    <div style={{ marginBottom: '24px', display: 'inline-block' }}>
+                        <div style={{ position: 'relative' }}>
+                            <IconLogo size={64} />
+                            <div style={{ position: 'absolute', top: '-12px', right: '-12px', color: 'var(--primary)', animation: 'float 3s infinite ease-in-out' }}>
+                                <IconSparkles size={24} />
+                            </div>
                         </div>
                     </div>
-                    <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', marginBottom: '8px', color: 'var(--primary-dark)', fontWeight: '800' }}>Welcome Back</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.9rem' }}>Sign in to access your health vault</p>
-
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--premium-dark)', margin: '0 0 8px', letterSpacing: '-0.04em' }}>Medics</h1>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', fontWeight: '600' }}>
+                        {step === 'phone' ? 'Your Personal Clinical Intelligence' : `Verifying +91 ${phoneNumber}`}
+                    </p>
+                    {devNote && (
+                        <div style={{
+                            marginTop: '20px', fontSize: '0.8rem', color: 'var(--primary)',
+                            background: 'var(--primary-subtle)', padding: '12px 16px', borderRadius: '14px',
+                            fontWeight: '800', border: '1px solid var(--primary-subtle)'
+                        }}>
+                            Dev OTP: {devNote}
+                        </div>
+                    )}
                 </div>
 
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <form onSubmit={step === 'phone' ? handleSendOTP : handleVerifyOTP} style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative', zIndex: 1 }}>
                     {error && (
-                        <div className="anim-shake" style={{
-                            padding: '14px',
-                            borderRadius: 'var(--radius-md)',
-                            background: 'var(--error-bg)',
-                            color: 'var(--error)',
-                            fontSize: '0.85rem',
-                            fontWeight: '600',
-                            textAlign: 'center',
-                            border: '1px solid rgba(239, 68, 68, 0.1)'
+                        <div className="animate-pop" style={{
+                            padding: '14px', borderRadius: '14px', background: '#FEF2F2',
+                            color: 'var(--error)', fontSize: '0.9rem', fontWeight: '700', textAlign: 'center',
+                            border: '1.5px solid #FEE2E2'
                         }}>
                             {error}
                         </div>
                     )}
 
-                    <div className="input-premium-wrapper">
-                        <label style={{
-                            display: 'block',
-                            fontSize: '0.75rem',
-                            fontWeight: '700',
-                            marginBottom: '8px',
-                            color: 'var(--primary-dark)',
-                            letterSpacing: '0.05em',
-                            marginLeft: '4px'
-                        }}>PHONE NUMBER</label>
-                        <div style={{ position: 'relative' }}>
-                            <div className="input-icon">
-                                <IconPhone />
+                    {step === 'phone' ? (
+                        <div>
+                            <label className="text-label" style={{ fontSize: '0.7rem', marginBottom: '8px' }}>MOBILE NUMBER</label>
+                            <div style={{ position: 'relative' }}>
+                                <span style={{
+                                    position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)',
+                                    fontSize: '1.1rem', color: 'var(--text-main)', fontWeight: '800'
+                                }}>+91</span>
+                                <input
+                                    type="tel"
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    placeholder="00000 00000"
+                                    maxLength="10"
+                                    className="input-field"
+                                    style={{ paddingLeft: '60px', borderRadius: '16px', height: '60px', fontSize: '1.1rem', fontWeight: '800' }}
+                                    required
+                                    autoFocus
+                                />
                             </div>
-                            <span style={{
-                                position: 'absolute',
-                                left: '44px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                fontSize: '1rem',
-                                color: 'var(--text-main)',
-                                fontWeight: '600'
-                            }}>+91</span>
-                            <input
-                                type="tel"
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                placeholder="98765 43210"
-                                maxLength="10"
-                                className="input-premium"
-                                style={{ paddingLeft: '84px' }}
-                                required
-                            />
                         </div>
-                    </div>
-
-                    <div className="input-premium-wrapper">
-                        <label style={{
-                            display: 'block',
-                            fontSize: '0.75rem',
-                            fontWeight: '700',
-                            marginBottom: '8px',
-                            color: 'var(--primary-dark)',
-                            letterSpacing: '0.05em',
-                            marginLeft: '4px'
-                        }}>PASSWORD</label>
-                        <div style={{ position: 'relative' }}>
-                            <div className="input-icon">
-                                <IconLock />
+                    ) : (
+                        <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                <label className="text-label" style={{ fontSize: '0.7rem', margin: 0 }}>ENTER CODE</label>
+                                <button type="button" onClick={() => setStep('phone')} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: '0.75rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                                    <IconChevronLeft size={14} /> EDIT NUMBER
+                                </button>
                             </div>
                             <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                className="input-premium"
+                                type="text"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                                placeholder="0 0 0 0 0 0"
+                                maxLength="6"
+                                className="input-field"
+                                style={{ textAlign: 'center', letterSpacing: '0.5em', fontWeight: '800', borderRadius: '16px', height: '60px', fontSize: '1.4rem' }}
                                 required
+                                autoFocus
                             />
                         </div>
-                        <div style={{ textAlign: 'right', marginTop: '10px' }}>
-                            <span style={{
-                                color: 'var(--primary)',
-                                fontSize: '0.85rem',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                transition: 'color 0.2s ease'
-                            }} className="hover-underline">Forgot Password?</span>
-                        </div>
-                    </div>
+                    )}
 
-                    <button type="submit" className="btn btn-primary btn-lg" disabled={isLoading} style={{
-                        marginTop: '8px',
-                        background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
-                        border: 'none',
-                        boxShadow: 'var(--shadow-glow)',
-                        borderRadius: 'var(--radius-lg)'
-                    }}>
-                        {isLoading ? 'Verifying...' : 'Sign In'}
+                    <button type="submit" className="btn btn-primary" disabled={isLoading} style={{ height: '60px', borderRadius: '18px', fontWeight: '800', fontSize: '1.1rem', position: 'relative', overflow: 'hidden', boxShadow: '0 12px 24px rgba(16, 185, 129, 0.2)' }}>
+                        <div className="holographic-glow" style={{ opacity: 0.2 }} />
+                        {isLoading ? 'Processing...' : (step === 'phone' ? 'Begin Session' : 'Access Vault')}
                     </button>
-
-                    <div style={{
-                        marginTop: '16px',
-                        textAlign: 'center',
-                        fontSize: '0.95rem',
-                        color: 'var(--text-secondary)'
-                    }}>
-                        New to Medics? <span onClick={() => onNavigate('signup')} style={{
-                            color: 'var(--primary)',
-                            fontWeight: '800',
-                            cursor: 'pointer'
-                        }} className="hover-underline">Create Account</span>
-                    </div>
                 </form>
 
-                <div style={{ marginTop: '40px' }}>
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '16px',
-                        color: 'var(--text-muted)',
-                        fontSize: '0.75rem',
-                        fontWeight: '700',
-                        letterSpacing: '0.05em',
-                        marginBottom: '24px'
-                    }}>
-                        <div style={{ flex: 1, height: '1.5px', background: 'rgba(0,0,0,0.05)' }}></div>
-                        <span>OR CONTINUE WITH</span>
-                        <div style={{ flex: 1, height: '1.5px', background: 'rgba(0,0,0,0.05)' }}></div>
-                    </div>
+                {step === 'phone' && (
+                    <div style={{ marginTop: '40px', position: 'relative', zIndex: 1 }}>
+                        <div style={{
+                            display: 'flex', alignItems: 'center', gap: '16px', color: '#CBD5E1',
+                            fontSize: '0.7rem', fontWeight: '900', marginBottom: '24px', letterSpacing: '0.1em'
+                        }}>
+                            <div style={{ flex: 1, height: '1.5px', background: '#F1F5F9' }}></div>
+                            <span>SECURE AUTHENTICATION</span>
+                            <div style={{ flex: 1, height: '1.5px', background: '#F1F5F9' }}></div>
+                        </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                        {[
-                            { icon: <IconGoogle />, label: 'Google' },
-                            { icon: <IconFacebook />, label: 'Facebook' },
-                            { icon: <IconApple />, label: 'Apple' }
-                        ].map((item, i) => (
-                            <button key={i} className="glass" style={{
-                                width: '64px',
-                                height: '64px',
-                                borderRadius: '20px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                padding: 0,
-                                border: '1px solid rgba(255,255,255,0.8)',
-                                transition: 'all 0.3s var(--ease-elastic)',
-                                background: 'rgba(255,255,255,0.5)'
-                            }} onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-4px) scale(1.05)';
-                                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                            }} onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                                e.currentTarget.style.boxShadow = 'none';
-                            }}>
-                                {item.icon}
+                        <div style={{ display: 'flex', gap: '16px' }}>
+                            <button onClick={handleGoogleLogin} className="btn-ghost flex-center" style={{ flex: 1, height: '56px', borderRadius: '16px', border: '1px solid #F1F5F9', background: 'white' }}>
+                                <IconGoogle />
                             </button>
-                        ))}
+                            <button className="btn-ghost flex-center" style={{ flex: 1, height: '56px', borderRadius: '16px', border: '1px solid #F1F5F9', background: 'white' }}>
+                                <IconApple />
+                            </button>
+                        </div>
+
+                        <div style={{ marginTop: '24px', textAlign: 'center' }}>
+                            <button
+                                type="button"
+                                onClick={() => onNavigate('talent-auth')}
+                                className="btn-ghost"
+                                style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: '700', textDecoration: 'underline', textUnderlineOffset: '4px' }}
+                            >
+                                Switch to Clinical Staff Login
+                            </button>
+                        </div>
                     </div>
+                )}
+
+                <div style={{ marginTop: '32px', textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.5', fontWeight: '600', position: 'relative', zIndex: 1 }}>
+                    Secure 256-bit encrypted gateway.<br />
+                    By continuing, you agree to our <span style={{ color: 'var(--primary)', cursor: 'pointer' }}>Terms</span> & <span style={{ color: 'var(--primary)', cursor: 'pointer' }}>Privacy Policy</span>.
                 </div>
             </div>
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .hover-underline:hover { text-decoration: underline; }
-                @keyframes shake {
-                    0%, 100% { transform: translateX(0); }
-                    25% { transform: translateX(-4px); }
-                    75% { transform: translateX(4px); }
-                }
-                .anim-shake { animation: shake 0.4s ease-in-out; }
-            `}} />
         </div>
     );
 };

@@ -3,26 +3,59 @@ import './App.css';
 import SplashScreen from './components/SplashScreen';
 import OnboardingFlow from './components/OnboardingFlow';
 import LoginView from './components/LoginView';
-import SignUpView from './components/SignUpView';
+import TalentAuth from './components/TalentAuth';
+// import SignUpView from './components/SignUpView'; // Deprecated
 import Dashboard from './components/Dashboard';
 import ProfileView from './components/ProfileView';
 import RecordsView from './components/RecordsView';
-import FAQView from './components/FAQView';
-import { SharedAccessView, SecurityView, StorageView } from './components/ProfileSubViews';
+import { SharedAccessView, SecurityView, StorageView, FAQView } from './components/ProfileSubViews';
+import SubscriptionView from './components/SubscriptionView';
+import VaultView from './components/VaultView';
+import InsuranceView from './components/InsuranceView';
 
 function App() {
   const [currentStep, setCurrentStep] = useState('splash'); // splash, onboarding, login, dashboard, profile, records
+  const [dashboardAction, setDashboardAction] = useState(null); // 'scan' | 'bot' | null
+
+  const handleNavigate = (step) => {
+    if (step === 'scan' || step === 'bot') {
+      setDashboardAction(step);
+      setCurrentStep('dashboard');
+    } else {
+      setCurrentStep(step);
+    }
+  };
+
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem('medics_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
   const [documents, setDocuments] = useState([]);
+  const [familyMembers, setFamilyMembers] = useState([]);
 
   useEffect(() => {
     if (user) {
       fetchDocuments();
+      fetchFamily();
     }
   }, [user]);
+
+  const fetchFamily = async () => {
+    try {
+      const token = localStorage.getItem('medics_token');
+      const response = await fetch('/api/family', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setFamilyMembers(data);
+      } else if (response.status === 401) {
+        handleLogout();
+      }
+    } catch (err) {
+      console.error('Fetch Family Error:', err);
+    }
+  };
 
   const fetchDocuments = async () => {
     try {
@@ -33,6 +66,8 @@ function App() {
       if (response.ok) {
         const data = await response.json();
         setDocuments(data);
+      } else if (response.status === 401) {
+        handleLogout();
       }
     } catch (err) {
       console.error('Fetch Documents Error:', err);
@@ -60,6 +95,9 @@ function App() {
         const data = await response.json();
         setDocuments(prev => [data, ...prev]);
         alert('File uploaded to vault successfully!');
+      } else if (response.status === 401) {
+        handleLogout();
+        alert('Session expired. Please log in again.');
       } else {
         const errorData = await response.json();
         alert(`Upload failed: ${errorData.message || 'Unknown error'}`);
@@ -80,6 +118,8 @@ function App() {
       });
       if (response.ok) {
         setDocuments(prev => prev.filter(doc => (doc._id || doc.id) !== id));
+      } else if (response.status === 401) {
+        handleLogout();
       }
     } catch (err) {
       console.error('Delete Document Error:', err);
@@ -130,34 +170,49 @@ function App() {
       <div className={`step-wrapper ${currentStep === 'login' ? 'active' : ''}`}>
         {currentStep === 'login' && <LoginView onLogin={handleLogin} onNavigate={(step) => setCurrentStep(step)} />}
       </div>
-      <div className={`step-wrapper ${currentStep === 'signup' ? 'active' : ''}`}>
-        {currentStep === 'signup' && <SignUpView onSignUp={handleLogin} onNavigate={(step) => setCurrentStep(step)} />}
+      <div className={`step-wrapper ${currentStep === 'talent-auth' ? 'active' : ''}`}>
+        {currentStep === 'talent-auth' && <TalentAuth onLogin={handleLogin} onBack={() => setCurrentStep('login')} />}
       </div>
-      <div className={`step-wrapper ${['dashboard', 'profile', 'records', 'faq', 'shared', 'security', 'storage'].includes(currentStep) ? 'active' : ''}`}>
+      {/* SignUpView merged into LoginView (OTP Flow) */}
+      <div className={`step-wrapper ${['dashboard', 'profile', 'records', 'faq', 'shared', 'security', 'storage', 'subscription', 'vault', 'insurance'].includes(currentStep) ? 'active' : ''}`}>
         {currentStep === 'dashboard' && (
           <Dashboard
             user={user}
             documents={documents.slice(0, 3)}
-            onNavigate={(step) => setCurrentStep(step)}
+            familyMembers={familyMembers}
+            onNavigate={handleNavigate}
             onAdd={addDocument}
+            onRefreshFamily={fetchFamily}
+            action={dashboardAction}
+            onActionHandled={() => setDashboardAction(null)}
           />
         )}
-        {currentStep === 'profile' && <ProfileView user={user} documents={documents} onBack={() => setCurrentStep('dashboard')} onLogout={handleLogout} onNavigate={(step) => setCurrentStep(step)} />}
+        {currentStep === 'profile' && <ProfileView user={user} documents={documents} familyMembers={familyMembers} onBack={() => setCurrentStep('dashboard')} onLogout={handleLogout} onNavigate={handleNavigate} onRefreshFamily={fetchFamily} />}
 
         {currentStep === 'records' && (
           <RecordsView
             user={user}
             documents={documents}
+            familyMembers={familyMembers}
             onBack={() => setCurrentStep('dashboard')}
             onAdd={addDocument}
             onDelete={deleteDocument}
-            onNavigate={(step) => setCurrentStep(step)}
+            onNavigate={handleNavigate}
           />
         )}
         {currentStep === 'faq' && <FAQView onBack={() => setCurrentStep('profile')} />}
         {currentStep === 'shared' && <SharedAccessView onBack={() => setCurrentStep('profile')} />}
         {currentStep === 'security' && <SecurityView onBack={() => setCurrentStep('profile')} />}
         {currentStep === 'storage' && <StorageView onBack={() => setCurrentStep('profile')} />}
+        {currentStep === 'subscription' && (
+          <SubscriptionView
+            user={user}
+            onBack={() => setCurrentStep('profile')}
+            onUpdateUser={(updated) => setUser(updated)}
+          />
+        )}
+        {currentStep === 'vault' && <VaultView onBack={() => setCurrentStep('profile')} />}
+        {currentStep === 'insurance' && <InsuranceView onBack={() => setCurrentStep('profile')} />}
       </div>
 
       <style dangerouslySetInnerHTML={{

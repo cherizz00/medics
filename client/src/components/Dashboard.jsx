@@ -1,196 +1,339 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { IconHome, IconRecords, IconProfile, IconHospital, IconMedicine, IconLab, IconInsurance, IconQuery, IconStyles } from './Icons';
+import {
+    IconHome, IconRecords, IconProfile, IconHeart, IconActivity,
+    IconThermometer, IconWeight, IconSleep, IconPlus, IconUpload,
+    IconScan, IconVitals, IconBot, IconBell, IconSearch,
+    IconShieldCheck, IconInsurance, IconMedicine, IconFlask, IconSparkles
+} from './Icons';
+import BottomNavigation from './common/BottomNavigation';
+import HealthTrackers from './HealthTrackers';
 
-const Dashboard = ({ onNavigate, documents, onAdd, user }) => {
+import MedicationReminders from './MedicationReminders';
+import StoryViewer from './StoryViewer';
+import HealthBot from './HealthBot';
+import PremiumModal from './common/PremiumModal';
+
+const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onRefreshFamily, action, onActionHandled }) => {
     const [activeTab, setActiveTab] = useState('home');
+    const [vitals, setVitals] = useState({ heart_rate: null, bp: null, weight: null, temp: null });
+    const [stories, setStories] = useState([]);
+    const [viewingStory, setViewingStory] = useState(null);
+    const [showBot, setShowBot] = useState(false);
+    const [showPremiumModal, setShowPremiumModal] = useState(false);
     const fileInputRef = useRef(null);
+    const [selectedFamilyMember, setSelectedFamilyMember] = useState(null);
 
-    const userName = (user && user.name) ? user.name : 'Guest User';
+    const isPremium = user?.subscription?.tier === 'premium' || user?.subscription?.tier === 'family';
+
+    const handleFeatureClick = (path) => {
+        if (!isPremium && (path === 'bot' || path === 'vitals-history')) {
+            setShowPremiumModal(true);
+        } else {
+            if (path === 'bot') setShowBot(true);
+            else onNavigate(path);
+        }
+    };
+
+    // Handle incoming navigation actions (from App.jsx or internal)
+    useEffect(() => {
+        if (action === 'scan') {
+            fileInputRef.current?.click();
+            if (onActionHandled) onActionHandled();
+        } else if (action === 'bot') {
+            setShowBot(true);
+            if (onActionHandled) onActionHandled();
+        }
+    }, [action, onActionHandled]);
+
+    const userName = (user && user.name) ? user.name.split(' ')[0] : 'Guest';
     const userInitials = (user && user.name) ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'G';
+
+    useEffect(() => {
+        fetchVitals();
+        fetchStories();
+    }, [user, selectedFamilyMember]);
+
+    const fetchStories = async () => {
+        try {
+            const response = await fetch('/api/content/stories');
+            if (response.ok) setStories(await response.json());
+        } catch (err) { console.error(err); }
+    };
+
+    const fetchVitals = async () => {
+        if (!user) return;
+        try {
+            const token = localStorage.getItem('medics_token');
+            let url = '/api/vitals';
+            if (selectedFamilyMember) url += `?family_member_id=${selectedFamilyMember._id}`;
+
+            const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.ok) {
+                const data = await response.json();
+                const latest = { heart_rate: null, bp: null, weight: null, temp: null, blood_sugar: null, history: data };
+                data.forEach(v => { if (!latest[v.type]) latest[v.type] = v; });
+                setVitals(latest);
+            }
+        } catch (err) { console.error(err); }
+    };
+
+    const handleAddVital = async (type, value, unit) => {
+        try {
+            const token = localStorage.getItem('medics_token');
+            const body = { type, value, unit, date: new Date(), family_member_id: selectedFamilyMember?._id };
+            await fetch('/api/vitals', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(body)
+            });
+            fetchVitals();
+        } catch (err) { console.error(err); }
+    };
 
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = (event) => {
-                const newDoc = {
-                    id: Date.now(),
+                onAdd({
                     title: file.name,
-                    date: new Date().toISOString().split('T')[0],
+                    fileUrl: event.target.result,
                     size: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
                     category: 'Uploaded',
-                    url: event.target.result
-                };
-                onAdd(newDoc);
+                    doctor: 'Self Upload'
+                });
             };
             reader.readAsDataURL(file);
         }
     };
 
-    const openDocument = (doc) => {
-        const url = doc.fileUrl || doc.url;
-        if (url) {
-            const newWindow = window.open();
-            if (newWindow) {
-                newWindow.document.write(`<iframe src="${url}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
-            } else {
-                alert("Please allow popups to view documents.");
-            }
-        } else {
-            alert("This document cannot be opened at the moment.");
-        }
-    };
-
-
-    const IconStyles = () => null; // Icons are now global or handled via components, keeping for structure if needed but empty
-
     return (
-        <div className="page-container">
-            <header className="premium-header anim-slide-up" style={{ flexShrink: 0 }}>
+        <div className="page-container" style={{ background: 'var(--bg-app)' }}>
 
-                <div className="h-top">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-secondary)' }}>
-                        <span style={{ color: 'var(--primary)', fontSize: '1.2rem' }}>📍</span> Mumbai Central
-                    </div>
-                    <div style={{
-                        width: '40px', height: '40px', borderRadius: '14px', background: 'white',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border-subtle)',
-                        fontSize: '1.25rem'
-                    }}>
-                        🔔
-                    </div>
-                </div>
-
-                <div onClick={() => onNavigate('profile')} style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer',
-                    marginTop: '8px', marginBottom: '20px', gap: '16px'
+            {/* Top Bar - Eka Style */}
+            <div style={{ padding: '20px 20px 10px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div onClick={() => onNavigate('profile')} className="flex-center" style={{
+                    width: '44px', height: '44px', borderRadius: '50%',
+                    background: 'var(--primary-subtle)', color: 'var(--primary)',
+                    fontWeight: '800', cursor: 'pointer', border: '2px solid white',
+                    boxShadow: 'var(--shadow-sm)'
                 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Welcome back,</p>
-                        <h3 style={{
-                            fontSize: '1.75rem', color: 'var(--text-main)', margin: '4px 0',
-                            letterSpacing: '-0.03em', overflow: 'hidden', textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                        }}>{userName}</h3>
+                    {userInitials}
+                </div>
+                <div style={{ flex: 1 }}>
+                    <h2 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Hello, {userName}</h2>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0 }}>How are you feeling?</p>
+                </div>
+                <button className="flex-center" style={{ background: 'white', border: '1px solid var(--border)', borderRadius: '12px', width: '40px', height: '40px', color: 'var(--text-muted)' }}>
+                    <IconBell size={20} />
+                </button>
+            </div>
+
+            <main className="scroll-content" style={{ padding: '0 20px 120px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+
+                {/* Dual ABHA/Pass Strip - Eka Care Style */}
+                <div className="animate-fade" style={{
+                    marginTop: '8px',
+                    background: 'white', borderRadius: '24px', padding: '16px',
+                    border: '1px solid #EEF2FF', display: 'grid', gridTemplateColumns: '1fr 1fr',
+                    gap: '1px', boxShadow: '0 4px 12px rgba(80, 66, 189, 0.05)',
+                    position: 'relative', overflow: 'hidden'
+                }}>
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', height: '60%', width: '1px', background: '#F1F5F9' }}></div>
+
+                    <div onClick={() => onNavigate('profile')} className="clickable" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px' }}>
+                        <div className="flex-center" style={{ width: '36px', height: '36px', background: 'var(--primary-subtle)', borderRadius: '12px', color: 'var(--primary)' }}>
+                            <IconShieldCheck size={20} />
+                        </div>
+                        <div>
+                            <h4 style={{ fontSize: '0.75rem', fontWeight: '800', margin: 0, color: 'var(--text-secondary)' }}>Medics Pass ›</h4>
+                            <p style={{ fontSize: '0.7rem', color: 'var(--primary)', margin: 0, fontWeight: '800' }}>Buy now</p>
+                        </div>
                     </div>
-                    <div style={{
-                        width: '56px', height: '56px', borderRadius: '20px',
-                        background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
-                        color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '1.25rem', fontWeight: '800', boxShadow: 'var(--shadow-lg)',
-                        flexShrink: 0
-                    }}>
-                        {userInitials}
+
+                    <div onClick={() => onNavigate('profile')} className="clickable" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px', justifyContent: 'flex-end' }}>
+                        <div style={{ textAlign: 'right' }}>
+                            <h4 style={{ fontSize: '0.75rem', fontWeight: '800', margin: 0, color: 'var(--text-secondary)' }}>ABHA ID ›</h4>
+                            <p style={{ fontSize: '0.7rem', color: 'var(--primary)', margin: 0, fontWeight: '800' }}>Create Now</p>
+                        </div>
+                        <div className="flex-center" style={{ width: '36px', height: '36px', background: 'var(--primary-subtle)', borderRadius: '12px', color: 'var(--primary)' }}>
+                            <IconRecords size={20} />
+                        </div>
                     </div>
                 </div>
 
-
-                <div className="input-premium" style={{ marginBottom: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ fontSize: '1.2rem', opacity: 0.6 }}>🔍</span>
-                        <input type="text" placeholder="Search doctors, meds, reports..." style={{
-                            border: 'none', outline: 'none', width: '100%', fontSize: '1rem', color: 'var(--text-main)', background: 'transparent'
-                        }} />
+                {/* Recently Tracked Section */}
+                <div style={{ marginTop: '4px' }}>
+                    <div className="flex-between" style={{ marginBottom: '16px', paddingLeft: '4px' }}>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--premium-dark)' }}>Recently tracked</h3>
+                        <span
+                            onClick={() => onNavigate('records')}
+                            style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: '700', cursor: 'pointer' }}
+                        >
+                            HISTORY {!isPremium && '👑'} ›
+                        </span>
                     </div>
-                </div>
-            </header>
 
-            <main className="scroll-content" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-
-
-
-                <section className="premium-card anim-slide-up" style={{
-                    background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)',
-                    color: 'white', padding: '24px', position: 'relative', overflow: 'hidden',
-                    border: 'none', flexShrink: 0, animationDelay: '0.1s'
-                }} onClick={() => fileInputRef.current.click()}>
-
-                    <div style={{ position: 'relative', zIndex: 10 }}>
-                        <div style={{
-                            width: '48px', height: '48px', background: 'rgba(255,255,255,0.2)',
-                            borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '1.5rem', marginBottom: '16px'
-                        }}>📄</div>
-                        <h4 style={{ color: 'white', fontSize: '1.25rem', marginBottom: '4px' }}>Upload Health Vault</h4>
-                        <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', marginBottom: '20px' }}>
-                            Store your reports in a secure encrypted vault
-                        </p>
-                        <button style={{
-                            background: 'white', color: 'var(--primary)', border: 'none',
-                            padding: '12px 24px', borderRadius: 'var(--radius-full)', fontWeight: '800',
-                            fontSize: '0.9rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                        }}>+ Quick Upload</button>
-                    </div>
-                    <div style={{ position: 'absolute', top: '-10px', right: '-10px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }}></div>
-                </section>
-
-                <section className="anim-slide-up" style={{ animationDelay: '0.2s', flexShrink: 0 }}>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                        <h3 style={{ fontSize: '1.25rem' }}>Recent Records</h3>
-                        <span onClick={() => onNavigate('records')} style={{
-                            color: 'var(--primary)', fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer'
-                        }}>View Vault</span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {documents.map((doc, i) => (
-                            <div key={doc._id || doc.id || i} className="premium-card" onClick={() => openDocument(doc)} style={{
-                                padding: '16px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer'
-                            }}>
-                                <div style={{
-                                    width: '52px', height: '52px', borderRadius: '14px',
-                                    background: i % 2 === 0 ? 'var(--primary-subtle)' : 'var(--accent-light)',
-                                    color: i % 2 === 0 ? 'var(--primary)' : 'var(--accent)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem',
-                                    flexShrink: 0
-                                }}>
-                                    {i % 2 === 0 ? '📄' : '📜'}
-                                </div>
-
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                    <h4 style={{
-                                        fontSize: '1rem', marginBottom: '4px', fontWeight: '700',
-                                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-                                    }}>{doc.title}</h4>
-                                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
-                                        {doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : (doc.date || 'Today')} &bull; {doc.size || '0.0 MB'}
-                                    </p>
-                                </div>
-                                <div style={{ color: 'var(--text-muted)', fontSize: '1.5rem', flexShrink: 0 }}>&rsaquo;</div>
-
+                    <div className="scroll-snap-x hide-scrollbar" style={{ padding: '4px 2px', gap: '12px' }}>
+                        <div className="stat-card-premium scroll-card" style={{ minWidth: '135px' }}>
+                            <div className="stat-icon-wrapper" style={{ background: '#FEE2E2', color: '#EF4444' }}>
+                                <IconHeart />
                             </div>
-                        ))}
+                            <span style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--text-muted)' }}>HEART RATE</span>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                                <span style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-main)' }}>{vitals.heart_rate?.value || '--'}</span>
+                                <span style={{ fontSize: '0.65rem', fontWeight: '700', opacity: 0.7 }}>BPM</span>
+                            </div>
+                        </div>
 
+                        <div className="stat-card-premium scroll-card" style={{ minWidth: '135px' }}>
+                            <div className="stat-icon-wrapper" style={{ background: '#DBEAFE', color: '#2563EB' }}>
+                                <IconThermometer size={18} />
+                            </div>
+                            <span style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--text-muted)' }}>TEMPERATURE</span>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                                <span style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-main)' }}>{vitals.temp?.value || '--'}</span>
+                                <span style={{ fontSize: '0.65rem', fontWeight: '700', opacity: 0.7 }}>°F</span>
+                            </div>
+                        </div>
+
+                        <div className="stat-card-premium scroll-card" style={{ minWidth: '135px' }}>
+                            <div className="stat-icon-wrapper" style={{ background: '#DCFCE7', color: '#10B981' }}>
+                                <IconFlask size={18} />
+                            </div>
+                            <span style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--text-muted)' }}>BLOOD SUGAR</span>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                                <span style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-main)' }}>{vitals.blood_sugar?.value || '--'}</span>
+                                <span style={{ fontSize: '0.65rem', fontWeight: '700', opacity: 0.7 }}>mg/dL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Scan Records Banner - Eka Signature */}
+                <div style={{ margin: '8px 0' }}>
+                    <div onClick={() => fileInputRef.current.click()} className="health-id-card animate-fade" style={{
+                        display: 'flex', alignItems: 'center',
+                        gap: '20px', padding: '20px', cursor: 'pointer', border: 'none',
+                        position: 'relative', overflow: 'hidden', boxShadow: '0 8px 24px rgba(80, 66, 189, 0.25)'
+                    }}>
+                        <div className="holographic-glow" />
+                        <div className="flex-center" style={{ width: '48px', height: '48px', background: 'rgba(255,255,255,0.2)', borderRadius: '14px', color: 'white' }}>
+                            <IconScan />
+                        </div>
+                        <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
+                            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0, color: 'white' }}>Scan Records</h4>
+                            <p style={{ fontSize: '0.75rem', opacity: 0.9, margin: '2px 0 0', color: 'white' }}>Save reports for AI health analysis</p>
+                        </div>
+                        <IconSparkles />
+                    </div>
+                </div>
+
+                {/* Modules Grid */}
+                <section style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                    <div onClick={() => handleFeatureClick('records')} className="stat-card-premium animate-fade" style={{ background: 'white', alignItems: 'flex-start', padding: '20px' }}>
+                        <div className="stat-icon-wrapper" style={{ background: '#EEF2FF', color: '#4F46E5' }}>
+                            <IconRecords />
+                        </div>
+                        <div>
+                            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Records</h4>
+                            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>Latest: Lab Report</p>
+                        </div>
+                    </div>
+
+                    <div onClick={() => handleFeatureClick('bot')} className="stat-card-premium animate-fade" style={{ background: 'white', alignItems: 'flex-start', padding: '20px', position: 'relative' }}>
+                        {!isPremium && <span style={{ position: 'absolute', top: '12px', right: '12px', fontSize: '0.8rem' }}>👑</span>}
+                        <div className="stat-icon-wrapper" style={{ background: '#FDF2F8', color: '#DB2777' }}>
+                            <IconBot />
+                        </div>
+                        <div>
+                            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Dr. Coach</h4>
+                            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>Ask AI Assistant</p>
+                        </div>
+                    </div>
+
+                    <div onClick={() => onNavigate('insurance')} className="stat-card-premium animate-fade" style={{ background: 'white', alignItems: 'flex-start', padding: '20px' }}>
+                        <div className="stat-icon-wrapper" style={{ background: '#FFF7ED', color: '#EA580C' }}>
+                            <IconInsurance />
+                        </div>
+                        <div>
+                            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Insurance</h4>
+                            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>Policy Insights</p>
+                        </div>
+                    </div>
+
+                    <div onClick={() => onNavigate('records')} className="stat-card-premium animate-fade" style={{ background: 'white', alignItems: 'flex-start', padding: '20px' }}>
+                        <div className="stat-icon-wrapper" style={{ background: '#F0F9FF', color: '#0284C7' }}>
+                            <IconMedicine />
+                        </div>
+                        <div>
+                            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Medicines</h4>
+                            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>2 Due Today</p>
+                        </div>
                     </div>
                 </section>
 
+                <div id="medication-section" style={{ marginTop: '4px' }}>
+                    <div className="flex-between" style={{ marginBottom: '16px', paddingLeft: '4px' }}>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--premium-dark)' }}>Daily Medications</h3>
+                        <button
+                            onClick={() => handleFeatureClick('records')}
+                            className="flex-center"
+                            style={{
+                                width: '32px', height: '32px', borderRadius: '10px',
+                                background: 'var(--primary-subtle)', border: 'none', color: 'var(--primary)'
+                            }}
+                        >
+                            <IconPlus size={18} />
+                        </button>
+                    </div>
+                    <MedicationReminders
+                        isPremium={user?.subscription?.tier === 'premium'}
+                        onUpgrade={() => onNavigate('subscription')}
+                    />
+                </div>
 
-
+                <HealthTrackers onAddVital={handleAddVital} />
 
             </main>
 
-            <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} />
+            <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} accept="image/*,application/pdf" />
 
-            <nav className="bottom-nav">
-                {[
-                    { id: 'dashboard', label: 'Home', icon: <IconHome active={activeTab === 'dashboard' || activeTab === 'home'} /> },
-                    { id: 'records', label: 'Records', icon: <IconRecords active={activeTab === 'records'} /> },
-                    { id: 'profile', label: 'Profile', icon: <IconProfile active={activeTab === 'profile'} /> }
-                ].map(tab => (
-                    <div
-                        key={tab.id}
-                        className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
-                        onClick={() => { setActiveTab(tab.id); onNavigate(tab.id); }}
-                    >
-                        {tab.icon}
-                        <span>{tab.label}</span>
+            <BottomNavigation
+                activeTab="home"
+                onNavigate={onNavigate}
+            />
+
+            {showBot && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000,
+                    background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)',
+                    display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'
+                }}>
+                    <div style={{ height: '94vh', background: 'white', borderRadius: '32px 32px 0 0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }} className="animate-fade">
+                        <div style={{ padding: '12px', display: 'flex', justifyContent: 'center' }} onClick={() => setShowBot(false)}>
+                            <div style={{ width: '40px', height: '4px', background: 'var(--border)', borderRadius: '2px' }} />
+                        </div>
+                        <div style={{ flex: 1, padding: '0 20px 20px', display: 'flex', flexDirection: 'column' }}>
+                            <div className="flex-between" style={{ padding: '8px 0 16px' }}>
+                                <h3 style={{ fontSize: '1.2rem', fontWeight: '800' }}>HealthBot AI</h3>
+                                <button onClick={() => setShowBot(false)} className="btn btn-ghost" style={{ padding: '4px 12px', fontSize: '0.8rem' }}>Close</button>
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <HealthBot />
+                            </div>
+                        </div>
                     </div>
-                ))}
-            </nav>
+                </div>
+            )}
+
+            <PremiumModal
+                isOpen={showPremiumModal}
+                onClose={() => setShowPremiumModal(false)}
+                onUpgrade={() => onNavigate('subscription')}
+            />
         </div>
     );
 };
-
 
 export default Dashboard;
