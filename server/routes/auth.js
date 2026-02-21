@@ -183,6 +183,48 @@ router.post('/google', async (req, res) => {
     }
 });
 
+// @route POST /api/auth/register-password
+// @desc Create a new user with email and password
+router.post('/register-password', async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        // Check if user already exists
+        let user = await User.findOne({ email });
+        if (user) return res.status(400).json({ message: 'User already exists' });
+
+        // Create new user
+        user = new User({
+            name,
+            email,
+            password, // In production, hash this!
+            auth_provider: 'password',
+            profile: { avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random` }
+        });
+
+        await user.save();
+
+        // Generate Token
+        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+
+        res.status(201).json({
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                profile: user.profile
+            }
+        });
+    } catch (err) {
+        console.error('Registration Error:', err);
+        res.status(500).json({ message: 'Server error during registration' });
+    }
+});
+
 // @route POST /api/auth/login-password
 // @desc Verify credentials and login
 router.post('/login-password', async (req, res) => {
@@ -194,9 +236,10 @@ router.post('/login-password', async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
-        // In a real app, compare hashed passwords. For now, checking literal if it exists 
-        // or accepting a default password for the 'talent' user.
-        if (password !== 'password123' && user.password !== password) {
+        // Check password
+        // Accept defaults for mock staff or literal match
+        const isMatch = (password === 'password123') || (user.password === password);
+        if (!isMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 

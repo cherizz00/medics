@@ -86,84 +86,102 @@ const SubscriptionView = ({ user, onBack, onUpdateUser }) => {
     };
 
     return (
-        <div className="page-container" style={{ background: 'var(--bg-app)', padding: '0 20px' }}>
-            <header className="animate-fade" style={{ padding: '20px 0', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <button onClick={onBack} className="btn-ghost flex-center" style={{ width: '40px', height: '40px', borderRadius: '12px', padding: 0, cursor: 'pointer' }}>
-                    <IconChevronLeft />
-                </button>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '900', margin: 0, color: 'var(--premium-dark)' }}>Health Pass</h3>
-            </header>
-
-            <main className="scroll-content animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '120px' }}>
-                <div style={{ textAlign: 'center', padding: '10px 0' }}>
+        <div className="page-container" style={{ background: '#F8FAFF' }}>
+            <main className="scroll-content hide-scrollbar" style={{ padding: '0 20px 100px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <header style={{ padding: '20px 0', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <button onClick={onBack} className="btn-ghost flex-center" style={{ width: '40px', height: '40px', borderRadius: '12px', padding: 0, cursor: 'pointer', background: 'white', border: '1px solid #EEF2FF', boxShadow: 'var(--shadow-sm)' }}>
+                        <IconChevronLeft />
+                    </button>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: '800', margin: 0, color: 'var(--premium-dark)', letterSpacing: '-0.02em' }}>Health Pass</h3>
+                </header>
+                <div style={{ textAlign: 'center', padding: '20px 0 10px' }}>
                     <div style={{
-                        width: '64px', height: '64px', background: 'var(--primary)',
-                        borderRadius: '20px', display: 'inline-flex', alignItems: 'center',
-                        justifyContent: 'center', color: 'white', marginBottom: '16px',
-                        boxShadow: '0 10px 20px rgba(80, 66, 189, 0.2)'
+                        width: '72px', height: '72px', background: 'linear-gradient(135deg, var(--primary), #3B82F6)',
+                        borderRadius: '24px', display: 'inline-flex', alignItems: 'center',
+                        justifyContent: 'center', color: 'white', marginBottom: '20px',
+                        boxShadow: '0 12px 24px rgba(80, 66, 189, 0.15)',
+                        border: '4px solid white'
                     }}>
-                        <IconPremium size={32} />
+                        <IconPremium size={36} />
                     </div>
-                    <h1 style={{ fontSize: '1.8rem', fontWeight: '900', color: 'var(--premium-dark)', margin: '0 0 8px' }}>Get the Pass</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>Exclusive health benefits for you & family</p>
+                    <h1 style={{ fontSize: '1.75rem', fontWeight: '900', color: 'var(--premium-dark)', margin: '0 0 8px', letterSpacing: '-0.03em' }}>Get the Pass</h1>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '600', opacity: 0.8 }}>Unlock premium healthcare benefits</p>
                 </div>
 
                 {plans.map((plan, i) => {
                     const isCurrent = currentPlan === plan.id;
-                    const isPremium = plan.id === 'premium' || plan.id === 'family';
+                    const isWhite = plan.id === 'free';
+                    const isPro = plan.id === 'premium';
+                    const isFamily = plan.id === 'family';
+
+                    const cardBg = isWhite ? 'white' : (isPro ? 'var(--premium-dark)' : '#1E293B');
+                    const accentColor = isWhite ? 'var(--primary)' : 'var(--premium-gold)';
+                    const textColor = isWhite ? 'var(--text-main)' : 'white';
 
                     return (
-                        <div key={plan.id} className="medical-card animate-fade" style={{
+                        <div key={plan.id} style={{
                             padding: '32px 24px',
-                            background: isPremium ? 'var(--premium-dark)' : 'white',
-                            color: isPremium ? 'white' : 'var(--text-main)',
-                            border: plan.recommended ? `2.5px solid var(--premium-gold)` : '1px solid var(--border)',
+                            background: cardBg,
+                            color: textColor,
+                            borderRadius: '32px',
+                            border: plan.recommended ? `2px solid var(--premium-gold)` : '1px solid #F1F5F9',
                             position: 'relative',
                             overflow: 'hidden',
-                            animationDelay: `${i * 0.1}s`
+                            boxShadow: isWhite ? '0 10px 25px -5px rgba(0,0,0,0.03)' : '0 20px 40px -10px rgba(15, 23, 42, 0.2)'
                         }}>
                             {plan.recommended && (
                                 <div style={{
                                     position: 'absolute', top: '0', right: '0',
-                                    background: 'var(--premium-gold)', color: 'white',
-                                    padding: '8px 16px', borderRadius: '0 0 0 16px',
-                                    fontWeight: '900', fontSize: '0.65rem', letterSpacing: '0.1em'
-                                }}>RECOMMENDED</div>
+                                    background: 'linear-gradient(90deg, #F59E0B, #D97706)', color: 'white',
+                                    padding: '8px 20px', borderRadius: '0 0 0 20px',
+                                    fontWeight: '900', fontSize: '0.65rem', letterSpacing: '0.08em',
+                                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                                }}>MOST POPULAR</div>
                             )}
 
-                            {isPremium && (
-                                <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '8rem', opacity: 0.05, transform: 'rotate(-15deg)' }}>
+                            {!isWhite && (
+                                <div style={{
+                                    position: 'absolute', top: '-10px', right: '-10px',
+                                    fontSize: '10rem', opacity: 0.03, transform: 'rotate(-15deg)',
+                                    pointerEvents: 'none'
+                                }}>
                                     <IconPremium />
                                 </div>
                             )}
 
-                            <span style={{
-                                fontSize: '0.7rem', fontWeight: '900',
-                                color: isPremium ? 'var(--premium-gold)' : 'var(--text-muted)',
-                                textTransform: 'uppercase', letterSpacing: '0.15em', display: 'block', marginBottom: '8px'
-                            }}>{plan.id}</span>
-
-                            <h3 style={{ fontSize: '1.6rem', fontWeight: '900', margin: '0 0 4px', color: 'inherit' }}>{plan.name}</h3>
-                            <p style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: '24px', color: 'inherit' }}>Everything you need for better care</p>
-
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '32px', color: 'inherit' }}>
-                                <span style={{ fontSize: '2.8rem', fontWeight: '900', color: 'inherit' }}>{plan.price}</span>
-                                <span style={{ opacity: 0.6, fontWeight: '700', fontSize: '1rem', color: 'inherit' }}>{plan.period}</span>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+                                <div>
+                                    <span style={{
+                                        fontSize: '0.7rem', fontWeight: '800',
+                                        color: accentColor,
+                                        textTransform: 'uppercase', letterSpacing: '0.12em', display: 'block', marginBottom: '6px'
+                                    }}>{plan.id}</span>
+                                    <h3 style={{ fontSize: '1.5rem', fontWeight: '900', margin: 0, letterSpacing: '-0.02em' }}>{plan.name}</h3>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'flex-end', gap: '2px' }}>
+                                        <span style={{ fontSize: '2rem', fontWeight: '900', color: accentColor }}>{plan.price}</span>
+                                        <span style={{ opacity: 0.6, fontWeight: '700', fontSize: '0.85rem' }}>{plan.period}</span>
+                                    </div>
+                                    <p style={{ fontSize: '0.7rem', opacity: 0.6, margin: 0, fontWeight: '600' }}>billed monthly</p>
+                                </div>
                             </div>
+
+                            <div style={{ height: '1px', background: isWhite ? '#F1F5F9' : 'rgba(255,255,255,0.1)', marginBottom: '24px' }} />
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' }}>
                                 {plan.features.map((feat, j) => (
-                                    <div key={j} style={{ display: 'flex', alignItems: 'center', gap: '14px', fontSize: '0.9rem', fontWeight: '600' }}>
+                                    <div key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', fontSize: '0.9rem', fontWeight: '600' }}>
                                         <div style={{
-                                            width: '20px', height: '20px', borderRadius: '50%',
-                                            background: isPremium ? 'rgba(255,255,255,0.1)' : 'var(--primary-subtle)',
-                                            color: isPremium ? 'var(--premium-gold)' : 'var(--primary)',
+                                            width: '22px', height: '22px', borderRadius: '7px',
+                                            background: isWhite ? 'var(--primary-subtle)' : 'rgba(255,255,255,0.08)',
+                                            color: accentColor,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            flexShrink: 0, fontSize: '0.7rem'
+                                            flexShrink: 0, fontSize: '0.75rem', marginTop: '1px'
                                         }}>
-                                            <IconCheck size={12} />
+                                            <IconCheck size={14} />
                                         </div>
-                                        <span style={{ opacity: isCurrent ? 0.6 : 1 }}>{feat}</span>
+                                        <span style={{ opacity: isCurrent ? 0.6 : 0.9, lineHeight: '1.4' }}>{feat}</span>
                                     </div>
                                 ))}
                             </div>
@@ -171,20 +189,21 @@ const SubscriptionView = ({ user, onBack, onUpdateUser }) => {
                             <button
                                 onClick={() => handleUpgrade(plan.id)}
                                 disabled={isCurrent || loading}
-                                className="btn"
+                                className="clickable"
                                 style={{
                                     width: '100%',
-                                    height: '56px',
-                                    background: isCurrent ? 'rgba(255,255,255,0.1)' : (isPremium ? 'var(--premium-gold)' : 'var(--primary)'),
-                                    color: 'white',
+                                    height: '58px',
+                                    background: isCurrent ? (isWhite ? '#F1F5F9' : 'rgba(255,255,255,0.05)') : accentColor,
+                                    color: isCurrent ? (isWhite ? 'var(--text-muted)' : 'rgba(255,255,255,0.4)') : (isWhite ? 'white' : 'var(--premium-dark)'),
                                     fontWeight: '900',
-                                    fontSize: '0.95rem',
-                                    border: isCurrent ? '1px solid rgba(255,255,255,0.2)' : 'none',
-                                    boxShadow: !isCurrent && isPremium ? '0 10px 20px rgba(212, 175, 55, 0.3)' : 'none',
-                                    borderRadius: '16px'
+                                    fontSize: '1rem',
+                                    border: isCurrent && !isWhite ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                                    boxShadow: !isCurrent ? `0 12px 24px ${isWhite ? 'rgba(16, 185, 129, 0.2)' : 'rgba(217, 119, 6, 0.2)'}` : 'none',
+                                    borderRadius: '18px',
+                                    cursor: isCurrent ? 'default' : 'pointer'
                                 }}
                             >
-                                {isCurrent ? 'Current Plan' : (loading ? 'Processing...' : plan.btnText)}
+                                {isCurrent ? 'ACTIVE PLAN' : (loading ? 'Processing...' : plan.btnText)}
                             </button>
                         </div>
                     );

@@ -23,6 +23,14 @@ const VaultDocumentSchema = new mongoose.Schema({
     uploaded_at: {
         type: Date,
         default: Date.now
+    },
+    is_assessment: {
+        type: Boolean,
+        default: false
+    },
+    assessment_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SymptomAssessment'
     }
 });
 

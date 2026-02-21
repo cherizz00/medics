@@ -4,7 +4,6 @@ import PremiumLock from './common/PremiumLock';
 import { IconActivity, IconSparkles } from './Icons';
 
 const VitalTrendsChart = ({ isPremium, onUpgrade, data }) => {
-    // Mock data if none provided (or for visual if empty)
     const chartData = data && data.length > 0 ? data : [
         { name: 'Mon', value: 72 },
         { name: 'Tue', value: 75 },

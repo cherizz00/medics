@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const SymptomAssessment = require('../models/SymptomAssessment');
 const HealthBotSession = require('../models/HealthBotSession');
+const VaultDocument = require('../models/VaultDocument');
 
 // @route   POST api/symptoms/assessment
 // @desc    Finalize a session into a structured assessment
@@ -32,6 +33,16 @@ router.post('/assessment', auth, async (req, res) => {
         });
 
         await assessment.save();
+
+        // Create a VaultDocument entry so it shows up in the Vault
+        const vaultDoc = new VaultDocument({
+            user_id: req.user.id,
+            filename: `AI Health Assessment - ${new Date().toLocaleDateString()}`,
+            mime_type: 'application/json',
+            is_assessment: true,
+            assessment_id: assessment._id
+        });
+        await vaultDoc.save();
 
         // Mark session as completed
         session.status = 'completed';

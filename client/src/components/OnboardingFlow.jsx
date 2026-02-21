@@ -29,7 +29,6 @@ const OnboardingFlow = ({ onComplete }) => {
         <div className="page-container" style={{ background: 'white' }}>
             <main className="scroll-content flex-center" style={{ paddingBottom: '60px', flexDirection: 'column' }}>
 
-                {/* Visual Section */}
                 <div style={{
                     width: '100%',
                     height: '40vh',
@@ -40,7 +39,7 @@ const OnboardingFlow = ({ onComplete }) => {
                     marginBottom: '48px',
                     overflow: 'visible'
                 }}>
-                    <div className="holographic-glow" style={{ opacity: 0.1, background: onboardingData[step].accent, borderRadius: '50%' }} />
+                    <div style={{ opacity: 0.1, background: onboardingData[step].accent, borderRadius: '50%' }} />
 
                     {onboardingData.map((data, i) => (
                         <div key={i} style={{
@@ -54,7 +53,6 @@ const OnboardingFlow = ({ onComplete }) => {
                             transform: i === step
                                 ? 'translate(-50%, -50%) scale(1.1)'
                                 : `translate(-50%, -50%) scale(0.8) translateY(${i < step ? -40 : 40}px)`,
-                            transition: 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
                             color: data.accent,
                             zIndex: i === step ? 2 : 1,
                             pointerEvents: i === step ? 'auto' : 'none'
@@ -69,7 +67,7 @@ const OnboardingFlow = ({ onComplete }) => {
                             }}>
                                 {data.icon}
                                 {i === step && (
-                                    <div style={{ position: 'absolute', top: '20px', right: '20px', animation: 'float 3s infinite ease-in-out' }}>
+                                    <div style={{ position: 'absolute', top: '20px', right: '20px' }}>
                                         <IconSparkles size={32} />
                                     </div>
                                 )}
@@ -78,17 +76,14 @@ const OnboardingFlow = ({ onComplete }) => {
                     ))}
                 </div>
 
-                {/* Content Section */}
-                <div className="animate-fade" style={{ padding: '0 32px', textAlign: 'center', width: '100%', maxWidth: '400px' }}>
-                    {/* Dots */}
+                <div style={{ padding: '0 32px', textAlign: 'center', width: '100%', maxWidth: '400px' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '32px' }}>
                         {onboardingData.map((_, i) => (
                             <div key={i} style={{
                                 width: i === step ? '32px' : '8px',
                                 height: '8px',
                                 background: i === step ? onboardingData[step].accent : 'var(--border)',
-                                borderRadius: '4px',
-                                transition: 'all 0.4s ease'
+                                borderRadius: '4px'
                             }} />
                         ))}
                     </div>

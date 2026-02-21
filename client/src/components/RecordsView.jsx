@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
-    IconHome, IconRecords, IconProfile, IconStyles, IconScan,
+    IconHome, IconRecords, IconProfile, IconScan,
     IconMedicine, IconSearch, IconChevronLeft, IconSparkles,
     IconLaboratory, IconPrescription, IconScans, IconAssessments,
     IconFileText, IconBot, IconTrash, IconPlus
 } from './Icons';
 import BottomNavigation from './common/BottomNavigation';
 
-const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user, familyMembers = [] }) => {
+const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user, familyMembers = [], onTriggerAnalysis }) => {
     const [activeTab, setActiveTab] = useState('records');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
@@ -17,6 +17,8 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user, fam
 
     React.useEffect(() => {
         fetchAssessments();
+        const interval = setInterval(fetchAssessments, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     const fetchAssessments = async () => {
@@ -58,6 +60,7 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user, fam
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
+            onTriggerAnalysis(file);
             if (file.size > 10 * 1024 * 1024) {
                 alert('File size exceeds 10MB limit.');
                 return;
@@ -90,67 +93,52 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user, fam
 
     return (
         <div className="page-container" style={{ background: 'white' }}>
-
-            <header style={{ padding: '24px 20px 0' }}>
-                <div className="flex-between" style={{ marginBottom: '24px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <button onClick={onBack} className="btn-ghost flex-center" style={{ width: '40px', height: '40px', borderRadius: '12px', padding: 0 }}>
-                            <IconChevronLeft />
-                        </button>
-                        <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--premium-dark)' }}>Health Vault</h2>
+            <main className="scroll-content hide-scrollbar" style={{ padding: '0 20px 100px' }}>
+                <header style={{ padding: '24px 0 0' }}>
+                    <div className="flex-between" style={{ marginBottom: '24px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <button onClick={onBack} className="btn-ghost flex-center" style={{ width: '40px', height: '40px', borderRadius: '12px', padding: 0 }}>
+                                <IconChevronLeft />
+                            </button>
+                            <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--premium-dark)' }}>Health Vault</h2>
+                        </div>
                     </div>
-                </div>
 
-                <div style={{ position: 'relative', marginBottom: '20px' }}>
-                    <input
-                        type="text"
-                        placeholder="Search your records..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="input-field"
-                        style={{ paddingLeft: '44px', background: '#F3F4F6', border: 'none', borderRadius: '14px' }}
-                    />
-                    <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5, color: 'var(--primary)' }}>
-                        <IconSearch size={20} />
-                    </span>
-                </div>
+                    <div style={{ position: 'relative', marginBottom: '20px' }}>
+                        <input
+                            type="text"
+                            placeholder="Search your records..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="input-field"
+                            style={{ paddingLeft: '44px', background: '#F3F4F6', border: 'none', borderRadius: '14px' }}
+                        />
+                        <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5, color: 'var(--primary)' }}>
+                            <IconSearch size={20} />
+                        </span>
+                    </div>
 
-                {/* Folder Grid - Eka Style */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
-                    {categories.map(cat => {
-                        return (
-                            <div
-                                key={cat.name}
-                                onClick={() => setSelectedCategory(cat.name)}
-                                style={{
-                                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
-                                    opacity: selectedCategory === cat.name ? 1 : 0.6, cursor: 'pointer',
-                                    transition: 'var(--transition)'
-                                }}
-                            >
-                                <div style={{
-                                    width: '100%', aspectRatio: '1', borderRadius: '16px',
-                                    background: selectedCategory === cat.name ? 'var(--primary-subtle)' : '#F3F4F6',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    fontSize: '1.2rem',
-                                    border: selectedCategory === cat.name ? '1.5px solid var(--primary)' : '1.5px solid transparent',
-                                    color: selectedCategory === cat.name ? 'var(--primary)' : 'var(--text-muted)'
-                                }}>
-                                    {cat.icon}
+                    <div className="folder-grid">
+                        {categories.map(cat => {
+                            const isActive = selectedCategory === cat.name;
+                            return (
+                                <div
+                                    key={cat.name}
+                                    onClick={() => setSelectedCategory(cat.name)}
+                                    className={`folder-item ${isActive ? 'active' : ''}`}
+                                >
+                                    <div className="folder-icon-wrapper">
+                                        {cat.icon}
+                                    </div>
+                                    <span className="folder-label">{cat.name.toUpperCase()}</span>
                                 </div>
-                                <span style={{ fontSize: '0.65rem', fontWeight: '800', textAlign: 'center' }}>{cat.name.toUpperCase()}</span>
-                            </div>
-                        );
-                    })}
-                </div>
-            </header>
+                            );
+                        })}
+                    </div>
+                </header>
 
-            <main className="scroll-content" style={{ paddingTop: 0 }}>
-
-                {/* Simplified AI Analysis */}
-                <div className="animate-fade" style={{ marginBottom: '24px' }}>
+                <div style={{ marginBottom: '24px' }}>
                     <div className="medical-card" style={{ background: 'var(--primary-subtle)', border: '1px solid var(--primary)', padding: '20px', position: 'relative', overflow: 'hidden' }}>
-                        <div className="holographic-glow" opacity="0.5" />
                         <div className="flex-between" style={{ marginBottom: '12px', position: 'relative', zIndex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <IconSparkles />
@@ -161,7 +149,7 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user, fam
                         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: '1.5', position: 'relative', zIndex: 1 }}>
                             Automatically summarize clinical findings and track key biomarkers over time.
                         </p>
-                        <button className="btn btn-primary" style={{ width: '100%', height: '44px', fontSize: '0.9rem', position: 'relative', zIndex: 1 }}>Analyze Latest</button>
+                        <button onClick={() => onTriggerAnalysis(filteredDocs[0])} className="btn btn-primary" style={{ width: '100%', height: '44px', fontSize: '0.9rem', position: 'relative', zIndex: 1 }}>Analyze Latest</button>
                     </div>
                 </div>
 
@@ -175,7 +163,7 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user, fam
                     </div>
 
                     {filteredAssessments.map((a, i) => (
-                        <div key={a._id} className="medical-card animate-fade" style={{ background: '#f8fafc', borderLeft: `4px solid ${a.risk_level === 'critical' ? 'var(--error)' : a.risk_level === 'high' ? '#f97316' : 'var(--primary)'}`, padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div key={a._id} className="medical-card" style={{ background: '#f8fafc', borderLeft: `4px solid ${a.risk_level === 'critical' ? 'var(--error)' : a.risk_level === 'high' ? '#f97316' : 'var(--primary)'}`, padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <div className="flex-between">
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     <IconBot />
@@ -198,29 +186,26 @@ const RecordsView = ({ documents, onBack, onAdd, onDelete, onNavigate, user, fam
 
                     {filteredDocs.length > 0 ? filteredDocs.map((doc, i) => {
                         const Icon = doc.category === 'Laboratory' ? IconLaboratory : doc.category === 'Prescription' ? IconPrescription : doc.category === 'Scans' ? IconScans : IconFileText;
+                        const iconClass = doc.category === 'Laboratory' ? 'record-icon-lab' : doc.category === 'Prescription' ? 'record-icon-rx' : doc.category === 'Scans' ? 'record-icon-scan' : 'record-icon-default';
+
                         return (
-                            <div key={doc._id || doc.id} className="medical-card animate-fade" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '16px', animationDelay: `${i * 0.05}s` }}>
-                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer', minWidth: 0 }} onClick={() => openDocument(doc)}>
-                                    <div className="flex-center" style={{
-                                        width: '52px', height: '52px', borderRadius: '16px',
-                                        background: doc.category === 'Laboratory' ? '#ECFDF5' : doc.category === 'Prescription' ? '#FEF2F2' : '#F8FAFC',
-                                        color: doc.category === 'Laboratory' ? '#059669' : doc.category === 'Prescription' ? '#DC2626' : 'var(--text-secondary)',
-                                        fontSize: '1.2rem'
-                                    }}>
+                            <div key={doc._id || doc.id} className="medical-card" style={{ padding: 0, overflow: 'hidden' }}>
+                                <div className="record-item" onClick={() => openDocument(doc)}>
+                                    <div className={`record-icon-wrapper ${iconClass}`}>
                                         <Icon />
                                     </div>
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                        <h4 style={{ fontSize: '0.95rem', fontWeight: '700', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.title}</h4>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                    <div className="record-info">
+                                        <h4 className="record-title">{doc.title}</h4>
+                                        <div className="record-subtitle">
                                             <span>{doc.category || 'Record'}</span>
                                             <span>•</span>
                                             <span>{doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : doc.date}</span>
                                         </div>
                                     </div>
+                                    <button onClick={(e) => { e.stopPropagation(); onDelete(doc._id || doc.id); }} className="btn-ghost flex-center" style={{ width: '36px', height: '36px', borderRadius: '10px', color: 'var(--text-muted)' }}>
+                                        <IconTrash size={18} />
+                                    </button>
                                 </div>
-                                <button onClick={() => onDelete(doc._id || doc.id)} className="btn" style={{ padding: '8px', color: '#94a3b8', background: 'transparent' }}>
-                                    <IconTrash />
-                                </button>
                             </div>
                         );
                     }) : (

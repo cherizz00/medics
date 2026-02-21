@@ -24,7 +24,7 @@ const SplashScreen = () => {
         __html: `
         .splash-screen {
           height: 100vh;
-          background: var(--primary);
+          background: #5c56d6;
           display: flex;
           align-items: center;
           justify-content: center;

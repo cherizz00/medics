@@ -14,26 +14,50 @@ export const IconBell = ({ size = 20, color = "currentColor" }) => (
     </svg>
 );
 
-export const IconHome = ({ active }) => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={`premium-icon ${active ? 'active' : ''}`}>
-        <path className="icon-path icon-home-roof" d="M3 9.5L12 3L21 9.5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V9.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path className="icon-path icon-home-door" d="M9 21V12H15V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+export const IconHome = ({ active, size = 22 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        {active ? (
+            <path d="M3 10.5L12 3L21 10.5V20C21 20.55 20.55 21 20 21H4C3.45 21 3 20.55 3 20V10.5Z" fill="currentColor" stroke="currentColor" />
+        ) : (
+            <>
+                <path d="M3 10.5L12 3L21 10.5V20C21 20.55 20.55 21 20 21H4C3.45 21 3 20.55 3 20V10.5Z" stroke="currentColor" />
+                <path d="M9 21V14H15V21" stroke="currentColor" />
+            </>
+        )}
     </svg>
 );
 
-export const IconRecords = ({ active }) => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={`premium-icon ${active ? 'active' : ''}`}>
-        <path className="icon-path icon-doc-body" d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path className="icon-path icon-doc-fold" d="M14 2V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path className="icon-path-accent" d="M8 13H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        <path className="icon-path-accent" d="M8 17H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+export const IconRecords = ({ active, size = 22 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        {active ? (
+            <>
+                <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="currentColor" stroke="currentColor" />
+                <path d="M14 2V8H20" stroke="currentColor" />
+            </>
+        ) : (
+            <>
+                <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" />
+                <path d="M14 2V8H20" stroke="currentColor" />
+                <path d="M8 13H16" stroke="currentColor" />
+                <path d="M8 17H12" stroke="currentColor" />
+            </>
+        )}
     </svg>
 );
 
-export const IconProfile = ({ active }) => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className={`premium-icon ${active ? 'active' : ''}`}>
-        <path className="icon-path icon-user-circle" d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path className="icon-path icon-user-head" d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+export const IconProfile = ({ active, size = 22 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        {active ? (
+            <>
+                <circle cx="12" cy="8" r="4" fill="currentColor" stroke="currentColor" />
+                <path d="M20 21C20 17.13 16.42 14 12 14C7.58 14 4 17.13 4 21" fill="currentColor" stroke="currentColor" />
+            </>
+        ) : (
+            <>
+                <circle cx="12" cy="8" r="4" stroke="currentColor" />
+                <path d="M20 21C20 17.13 16.42 14 12 14C7.58 14 4 17.13 4 21" stroke="currentColor" />
+            </>
+        )}
     </svg>
 );
 
@@ -108,8 +132,8 @@ export const IconFacebook = () => (
     </svg>
 );
 
-export const IconApple = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+export const IconApple = ({ size = 24, color = "currentColor" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
         <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.75 1.18-.02 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.88-3.12 1.87-2.38 5.98.67 7.28-.65 1.63-1.57 3.25-2.72 4.9zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
     </svg>
 );
@@ -181,47 +205,57 @@ export const IconStar = ({ size = 20, fill = "none", stroke = "currentColor" }) 
     </svg>
 );
 
-export const IconStyles = () => (
-    <style dangerouslySetInnerHTML={{
-        __html: `
-    .premium-icon { transition: var(--transition); }
-    .premium-icon .icon-path { stroke: var(--text-muted); }
-    .premium-icon.active .icon-path { stroke: var(--primary); }
-    .premium-icon.active .icon-path-accent { stroke: var(--primary-dark); }
-    
-    .nav-item-p.active .icon-home-roof { transform: translateY(-1px); }
-    .nav-item-p.active .icon-home-door { opacity: 1; }
-    
-    .nav-item-p.active .icon-doc-body { transform: scale(1.05); }
-    
-    .nav-item-p.active .icon-user-head { transform: translateY(-1px); }
-    .nav-item-p.active .icon-user-head { transform: translateY(-1px); }
-  `}} />
-);
-
 export const IconPremium = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M7 19h10" />
-        <path d="M5 15h14" />
-        <path d="M19 15l-1.5-10L12 9L6.5 5L5 15" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
     </svg>
 );
 
-export const IconBot = () => (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
-        <rect x="5" y="9" width="14" height="10" rx="2"></rect>
-        <path d="M9 13v2"></path>
-        <path d="M15 13v2"></path>
-        <path d="M2 13h3"></path>
-        <path d="M19 13h3"></path>
+export const IconBot = ({ active, size = 22 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        {active ? (
+            <>
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" stroke="currentColor" />
+            </>
+        ) : (
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" />
+        )}
     </svg>
 );
 
-export const IconScan = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-        <circle cx="12" cy="13" r="4"></circle>
+export const IconLogo = ({ size = 48 }) => (
+    <svg width={size} height={size} viewBox="0 0 100 100">
+        <defs>
+            <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#6366F1" />
+                <stop offset="100%" stopColor="#5042BD" />
+            </linearGradient>
+        </defs>
+        <rect x="25" y="25" width="50" height="50" rx="18" fill="url(#logo-grad)" />
+        <path d="M50 35V65M35 50H65" stroke="white" strokeWidth="12" strokeLinecap="round" />
+    </svg>
+);
+
+export const IconScan = ({ active, size = 22 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        {active ? (
+            <>
+                <rect x="3" y="3" width="18" height="18" rx="3" fill="currentColor" stroke="currentColor" />
+                <path d="M12 8V16M8 12H16" stroke="white" strokeWidth="2" />
+            </>
+        ) : (
+            <>
+                <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" />
+                <path d="M12 8V16M8 12H16" stroke="currentColor" />
+            </>
+        )}
+    </svg>
+);
+
+export const IconPlusCircle = ({ size = 22, color = "currentColor" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 8V16M8 12H16" />
     </svg>
 );
 
@@ -310,6 +344,13 @@ export const IconChevronLeft = () => (
     </svg>
 );
 
+export const IconArrowLeft = ({ size = 20, color = "currentColor" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+);
+
 export const IconTrash = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6" />
@@ -379,13 +420,10 @@ export const IconFileText = () => (
     </svg>
 );
 
-export const IconSparkles = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="m12 3 1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3Z" />
-        <path d="M5 3v4" />
-        <path d="M3 5h4" />
-        <path d="M19 17v4" />
-        <path d="M17 19h4" />
+export const IconSparkles = ({ size = 24, color = "currentColor" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 3c.5 3.5 1.5 4.5 5 5-3.5.5-4.5 1.5-5 5-.5-3.5-1.5-4.5-5-5 3.5-.5 4.5-1.5 5-5z" fill={color} stroke="none" />
+        <circle cx="18" cy="18" r="1.5" fill={color} stroke="none" />
     </svg>
 );
 export const IconCloud = ({ size = 24, color = "currentColor" }) => (
@@ -431,19 +469,32 @@ export const IconHelp = ({ size = 20, color = "currentColor" }) => (
     </svg>
 );
 
-export const IconLogo = ({ size = 48 }) => (
-    <svg width={size} height={size} viewBox="0 0 100 100">
-        <defs>
-            <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="var(--primary)" />
-                <stop offset="100%" stopColor="var(--primary-dark)" />
-            </linearGradient>
-            <filter id="logo-glow" x="-20%" y="-20%" width="140%" height="140%">
-                <stop offset="0" stopColor="var(--primary)" stopOpacity="0.3" />
-            </filter>
-        </defs>
-        <rect x="40" y="20" width="20" height="60" fill="url(#logo-grad)" rx="6" />
-        <rect x="20" y="40" width="60" height="20" fill="url(#logo-grad)" rx="6" />
-        <circle cx="50" cy="50" r="15" fill="white" fillOpacity="0.2" />
+export const IconDoctor = ({ size = 24, color = "currentColor" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+);
+
+export const IconMapPin = ({ size = 20, color = "currentColor" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z" />
+        <circle cx="12" cy="10" r="3" />
+    </svg>
+);
+
+export const IconCart = ({ size = 24, color = "currentColor" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="9" cy="21" r="1" />
+        <circle cx="20" cy="21" r="1" />
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+    </svg>
+);
+
+export const IconChevronDown = ({ size = 20, color = "currentColor" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="m6 9 6 6 6-6" />
     </svg>
 );

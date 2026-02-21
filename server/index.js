@@ -7,6 +7,9 @@ const documentRoutes = require('./routes/documents');
 const vitalRoutes = require('./routes/vitals');
 const familyRoutes = require('./routes/family');
 const userRoutes = require('./routes/user');
+const symptomRoutes = require('./routes/symptoms');
+const contentRoutes = require('./routes/content');
+const consultancyRoutes = require('./routes/consultancy');
 
 
 dotenv.config();
@@ -55,6 +58,8 @@ app.use('/api/feedback', require('./routes/feedback'));
 
 
 app.use('/api/symptoms/assessment', require('./routes/symptomAssessment'));
+app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/consultancy', require('./routes/consultancy'));
 
 // Routes placeholder
 app.get('/', (req, res) => {

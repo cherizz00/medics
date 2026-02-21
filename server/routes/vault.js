@@ -3,7 +3,9 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const verifyPremium = require('../middleware/premium'); // Ensure only premium users acccess
 const VaultDocument = require('../models/VaultDocument');
+const User = require('../models/User');
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
@@ -33,15 +35,50 @@ const encryptFile = (inputPath, outputPath) => {
 router.use(auth);
 router.use(verifyPremium);
 
+// @route   GET api/vault/status
+// @desc    Check if user has a vault PIN set
+router.get('/status', async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        res.json({ hasPin: !!user.vaultPin });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   POST api/vault/set-pin
+// @desc    Set or update vault PIN
+router.post('/set-pin', async (req, res) => {
+    const { pin } = req.body;
+    if (!pin || pin.length !== 4) return res.status(400).json({ message: 'PIN must be 4 digits' });
+
+    try {
+        const user = await User.findById(req.user.id);
+        const salt = await bcrypt.genSalt(10);
+        user.vaultPin = await bcrypt.hash(pin, salt);
+        await user.save();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // @route   POST api/vault/unlock
 // @desc    Verify PIN to unlock vault session
 router.post('/unlock', async (req, res) => {
     const { pin } = req.body;
-    // Mock PIN check. In real app, hash this and store in User model.
-    if (pin === '0000') {
-        res.json({ success: true, token: 'mock-vault-session-token' });
-    } else {
-        res.status(400).json({ success: false, message: 'Invalid PIN' });
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user || !user.vaultPin) return res.status(400).json({ success: false, message: 'Vault PIN not set' });
+
+        const isMatch = await bcrypt.compare(pin, user.vaultPin);
+        if (isMatch) {
+            res.json({ success: true, token: 'mock-vault-session-token' });
+        } else {
+            res.status(400).json({ success: false, message: 'Invalid PIN' });
+        }
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
@@ -89,7 +126,9 @@ router.get('/files', async (req, res) => {
             _id: d._id,
             filename: d.filename,
             mime_type: d.mime_type,
-            uploaded_at: d.uploaded_at
+            uploaded_at: d.uploaded_at,
+            is_assessment: d.is_assessment,
+            assessment_id: d.assessment_id
         })));
     } catch (err) {
         console.error(err);

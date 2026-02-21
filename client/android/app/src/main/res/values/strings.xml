@@ -4,5 +4,4 @@
     <string name="title_activity_main">Medics</string>
     <string name="package_name">com.medics.app</string>
     <string name="custom_url_scheme">com.medics.app</string>
-    <string name="server_client_id">943010689340-8os3kgsghuc020gq917eqto7n4p50gaf.apps.googleusercontent.com</string>
 </resources>

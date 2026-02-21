@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IconPhone, IconMail, IconChevronLeft, IconChevronRight, IconLock, IconShieldCheck, IconSparkles, IconHelp, IconSearch, IconActivity, IconClock } from './Icons';
+import { IconPhone, IconMail, IconChevronLeft, IconChevronRight, IconLock, IconShieldCheck, IconSparkles, IconHelp, IconSearch, IconActivity, IconClock, IconLaboratory, IconScans, IconMedicine } from './Icons';
 import SubHeader from './common/SubHeader';
 
 export const SharedAccessView = ({ onBack }) => {
@@ -11,7 +11,7 @@ export const SharedAccessView = ({ onBack }) => {
     return (
         <div className="page-container" style={{ background: 'white' }}>
             <SubHeader title="Shared Access" onBack={onBack} />
-            <main className="scroll-content animate-fade">
+            <main className="scroll-content">
 
                 <div style={{
                     background: 'var(--primary-subtle)', padding: '16px', borderRadius: '16px',
@@ -74,11 +74,11 @@ export const SecurityView = ({ onBack }) => {
     const Toggle = ({ active, onClick }) => (
         <div onClick={onClick} style={{
             width: '44px', height: '24px', background: active ? 'var(--primary)' : 'var(--border)',
-            borderRadius: '99px', padding: '2px', transition: 'var(--transition)', cursor: 'pointer', position: 'relative'
+            borderRadius: '99px', padding: '2px', cursor: 'pointer', position: 'relative'
         }}>
             <div style={{
                 width: '20px', height: '20px', background: 'white', borderRadius: '50%',
-                transition: 'var(--transition)', transform: active ? 'translateX(20px)' : 'translateX(0)',
+                transform: active ? 'translateX(20px)' : 'translateX(0)',
                 boxShadow: 'var(--shadow-sm)'
             }}></div>
         </div>
@@ -87,7 +87,7 @@ export const SecurityView = ({ onBack }) => {
     return (
         <div className="page-container" style={{ background: 'white' }}>
             <SubHeader title="Security" onBack={onBack} />
-            <main className="scroll-content animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <main className="scroll-content" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div className="medical-card flex-between">
                     <div>
                         <h4 style={{ fontSize: '0.95rem', fontWeight: '800' }}>Biometric Login</h4>
@@ -127,7 +127,7 @@ export const StorageView = ({ onBack }) => {
     return (
         <div className="page-container" style={{ background: 'white' }}>
             <SubHeader title="Storage" onBack={onBack} />
-            <main className="scroll-content animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <main className="scroll-content" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
                 <div className="medical-card flex-center" style={{ flexDirection: 'column', gap: '20px', padding: '32px 16px' }}>
                     <div style={{ width: '120px', height: '120px', position: 'relative' }}>
@@ -193,8 +193,7 @@ export const FAQView = ({ onBack }) => {
                 <h2 style={{ fontSize: '1.35rem', fontWeight: '900', margin: 0, color: 'var(--premium-dark)' }}>Help Center</h2>
             </header>
 
-            <main className="scroll-content animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '32px', padding: '0 24px 120px' }}>
-                {/* Search Bar */}
+            <main className="scroll-content" style={{ display: 'flex', flexDirection: 'column', gap: '32px', padding: '0 24px 120px' }}>
                 <div style={{ position: 'relative' }}>
                     <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
                         <IconSearch size={20} />
@@ -209,7 +208,6 @@ export const FAQView = ({ onBack }) => {
                     />
                 </div>
 
-                {/* Support Cards */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div className="medical-card" style={{ padding: '24px', textAlign: 'center', background: 'var(--primary-subtle)', border: 'none' }}>
                         <div className="flex-center" style={{ width: '44px', height: '44px', background: 'white', borderRadius: '14px', margin: '0 auto 12px', color: 'var(--primary)' }}>
@@ -227,11 +225,10 @@ export const FAQView = ({ onBack }) => {
                     </div>
                 </div>
 
-                {/* FAQ List */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <h4 className="text-label" style={{ fontSize: '0.75rem', marginBottom: '8px' }}>TOP RELEVANT QUESTIONS</h4>
                     {filteredFaqs.map((item, i) => (
-                        <div key={i} className="medical-card animate-fade" style={{ padding: '24px', borderRadius: '24px', animationDelay: `${i * 0.1}s` }}>
+                        <div key={i} className="medical-card" style={{ padding: '24px', borderRadius: '24px' }}>
                             <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
                                 <div className="flex-center" style={{ width: '40px', height: '40px', background: '#F8FAFC', borderRadius: '12px', color: 'var(--primary)', flexShrink: 0 }}>
                                     {item.icon}

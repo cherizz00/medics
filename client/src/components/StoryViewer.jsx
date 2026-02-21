@@ -10,7 +10,7 @@ const StoryViewer = ({ stories, startIndex, onClose, isPremium, onUpgrade }) => 
         if (progress < 100) {
             interval = setInterval(() => {
                 setProgress(prev => prev + 1);
-            }, 50); // 5 seconds per story
+            }, 5000);
         } else {
             handleNext();
         }
@@ -41,7 +41,6 @@ const StoryViewer = ({ stories, startIndex, onClose, isPremium, onUpgrade }) => 
             position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
             background: 'black', zIndex: 1000, display: 'flex', flexDirection: 'column'
         }}>
-            {/* Progress Bars */}
             <div style={{
                 position: 'absolute', top: '12px', left: '0', width: '100%',
                 display: 'flex', gap: '6px', padding: '0 12px', zIndex: 1010
@@ -57,7 +56,6 @@ const StoryViewer = ({ stories, startIndex, onClose, isPremium, onUpgrade }) => 
                 ))}
             </div>
 
-            {/* Header / Close */}
             <div style={{
                 position: 'absolute', top: '24px', right: '12px', zIndex: 1010,
                 color: 'white', padding: '12px', cursor: 'pointer',
@@ -66,25 +64,22 @@ const StoryViewer = ({ stories, startIndex, onClose, isPremium, onUpgrade }) => 
                 <IconClose color="white" size={24} />
             </div>
 
-            {/* Content */}
             <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                 <img
                     src={currentStory.content_url}
                     alt={currentStory.title}
                     style={{
                         width: '100%', height: '100%', objectFit: 'cover',
-                        filter: isLocked ? 'blur(25px) brightness(0.7)' : 'none',
-                        transition: 'filter 0.5s ease'
+                        filter: isLocked ? 'blur(25px) brightness(0.7)' : 'none'
                     }}
                 />
 
                 {isLocked && (
-                    <div className="animate-fade" style={{
+                    <div style={{
                         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                         background: 'rgba(0,0,0,0.4)', color: 'white', textAlign: 'center', padding: '32px'
                     }}>
-                        <div className="holographic-glow" style={{ opacity: 0.15 }} />
 
                         <div style={{
                             width: '80px', height: '80px', background: 'var(--premium-gold)',
@@ -114,7 +109,6 @@ const StoryViewer = ({ stories, startIndex, onClose, isPremium, onUpgrade }) => 
                 )}
             </div>
 
-            {/* Footer / Caption */}
             {!isLocked && (
                 <div style={{
                     position: 'absolute', bottom: '0', left: '0', width: '100%',
@@ -127,7 +121,6 @@ const StoryViewer = ({ stories, startIndex, onClose, isPremium, onUpgrade }) => 
                 </div>
             )}
 
-            {/* Touch Areas */}
             <div style={{ position: 'absolute', top: '0', left: '0', width: '40%', height: '100%', zIndex: 1005 }} onClick={handlePrev}></div>
             <div style={{ position: 'absolute', top: '0', right: '0', width: '40%', height: '100%', zIndex: 1005 }} onClick={handleNext}></div>
         </div>

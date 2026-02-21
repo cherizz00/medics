@@ -8,12 +8,15 @@ const userSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
-        required: true,
+        required: false,
         unique: true,
+        sparse: true,
         trim: true
     },
     email: {
         type: String,
+        unique: true,
+        sparse: true,
         trim: true,
         lowercase: true
     },
@@ -43,6 +46,10 @@ const userSchema = new mongoose.Schema({
         notifications: { type: Boolean, default: true },
         language: { type: String, default: 'en' },
         theme: { type: String, default: 'light' }
+    },
+    vaultPin: {
+        type: String,
+        required: false
     },
     createdAt: {
         type: Date,

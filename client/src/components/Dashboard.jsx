@@ -1,43 +1,49 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLanguage } from '../LanguageContext';
+import translations from '../translations';
 import {
     IconHome, IconRecords, IconProfile, IconHeart, IconActivity,
     IconThermometer, IconWeight, IconSleep, IconPlus, IconUpload,
     IconScan, IconVitals, IconBot, IconBell, IconSearch,
-    IconShieldCheck, IconInsurance, IconMedicine, IconFlask, IconSparkles
+    IconShieldCheck, IconInsurance, IconMedicine, IconFlask, IconSparkles, IconDoctor, IconLock, IconClose
 } from './Icons';
 import BottomNavigation from './common/BottomNavigation';
 import HealthTrackers from './HealthTrackers';
 
-import MedicationReminders from './MedicationReminders';
+
 import StoryViewer from './StoryViewer';
 import HealthBot from './HealthBot';
-import PremiumModal from './common/PremiumModal';
 
-const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onRefreshFamily, action, onActionHandled }) => {
+/* ─── Inline SVG Icons ─── */
+const ScanIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V4h3" /><path d="M20 7V4h-3" /><path d="M4 17v3h3" /><path d="M20 17v3h-3" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+);
+const SparkIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" /></svg>
+);
+const ChevronRightSmall = () => (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4l4 4-4 4" /></svg>
+);
+
+const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onRefreshFamily, action, onActionHandled, selectedFamilyMember, onSetFamilyMember, cartItems = [], onSetCartItems, onTriggerAnalysis, onShowCart }) => {
     const [activeTab, setActiveTab] = useState('home');
     const [vitals, setVitals] = useState({ heart_rate: null, bp: null, weight: null, temp: null });
     const [stories, setStories] = useState([]);
     const [viewingStory, setViewingStory] = useState(null);
     const [showBot, setShowBot] = useState(false);
-    const [showPremiumModal, setShowPremiumModal] = useState(false);
-    const fileInputRef = useRef(null);
-    const [selectedFamilyMember, setSelectedFamilyMember] = useState(null);
+    const [notifications, setNotifications] = useState([]);
+    const [showNotifications, setShowNotifications] = useState(false);
 
-    const isPremium = user?.subscription?.tier === 'premium' || user?.subscription?.tier === 'family';
+    const fileInputRef = useRef(null);
 
     const handleFeatureClick = (path) => {
-        if (!isPremium && (path === 'bot' || path === 'vitals-history')) {
-            setShowPremiumModal(true);
-        } else {
-            if (path === 'bot') setShowBot(true);
-            else onNavigate(path);
-        }
+        if (path === 'bot') setShowBot(true);
+        else onNavigate(path);
     };
 
-    // Handle incoming navigation actions (from App.jsx or internal)
     useEffect(() => {
         if (action === 'scan') {
-            fileInputRef.current?.click();
+            onNavigate('scanner');
             if (onActionHandled) onActionHandled();
         } else if (action === 'bot') {
             setShowBot(true);
@@ -51,12 +57,30 @@ const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onR
     useEffect(() => {
         fetchVitals();
         fetchStories();
+        fetchNotifications();
+
+        const interval = setInterval(() => {
+            fetchVitals();
+            fetchNotifications();
+        }, 30000);
+        return () => clearInterval(interval);
     }, [user, selectedFamilyMember]);
 
     const fetchStories = async () => {
         try {
             const response = await fetch('/api/content/stories');
             if (response.ok) setStories(await response.json());
+        } catch (err) { console.error(err); }
+    };
+
+    const fetchNotifications = async () => {
+        if (!user) return;
+        try {
+            const token = localStorage.getItem('medics_token');
+            const response = await fetch('/api/notifications', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) setNotifications(await response.json());
         } catch (err) { console.error(err); }
     };
 
@@ -90,248 +114,387 @@ const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onR
         } catch (err) { console.error(err); }
     };
 
+    const markNotificationAsRead = async (id) => {
+        try {
+            const token = localStorage.getItem('medics_token');
+            await fetch(`/api/notifications/${id}/read`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            fetchNotifications();
+        } catch (err) { console.error(err); }
+    };
+
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
+            onTriggerAnalysis(file);
             const reader = new FileReader();
             reader.onload = (event) => {
                 onAdd({
+                    id: Date.now(),
                     title: file.name,
                     fileUrl: event.target.result,
                     size: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
                     category: 'Uploaded',
-                    doctor: 'Self Upload'
+                    doctor: 'Self Upload',
+                    uploadedAt: new Date().toISOString()
                 });
             };
             reader.readAsDataURL(file);
         }
     };
 
-    return (
-        <div className="page-container" style={{ background: 'var(--bg-app)' }}>
+    const { language } = useLanguage();
+    const t = translations[language] || translations.English;
 
-            {/* Top Bar - Eka Style */}
-            <div style={{ padding: '20px 20px 10px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div onClick={() => onNavigate('profile')} className="flex-center" style={{
-                    width: '44px', height: '44px', borderRadius: '50%',
-                    background: 'var(--primary-subtle)', color: 'var(--primary)',
-                    fontWeight: '800', cursor: 'pointer', border: '2px solid white',
-                    boxShadow: 'var(--shadow-sm)'
-                }}>
+    const getGreeting = () => {
+        const h = new Date().getHours();
+        if (h < 12) return t.goodMorning;
+        if (h < 17) return t.goodAfternoon;
+        return t.goodEvening;
+    };
+
+    const quickActions = [
+        { icon: <IconRecords size={20} />, label: t.records, sub: t.healthVault, color: '#4A6CF7', bg: '#EEF2FF', path: 'records' },
+        { icon: <IconBot size={20} />, label: t.drCoach, sub: t.aiAssistant, color: '#EC4899', bg: '#FDF2F8', path: 'bot' },
+        { icon: <IconDoctor size={20} />, label: t.consult, sub: t.findDoctors, color: '#10B981', bg: '#ECFDF5', path: 'consultancy' },
+        { icon: <IconInsurance size={20} />, label: t.insurance, sub: t.policyInsights, color: '#F59E0B', bg: '#FFFBEB', path: 'insurance' },
+        { icon: <IconLock size={20} />, label: t.vault, sub: t.encrypted, color: '#6366F1', bg: '#EEF2FF', path: 'vault' },
+        { icon: <IconMedicine size={20} />, label: t.pharmacy, sub: t.orderMeds, color: '#EF4444', bg: '#FEF2F2', path: 'pharmacy' },
+    ];
+
+    return (
+        <div className="page-container" style={{ background: '#F7F8FA' }}>
+
+            {/* ─── Header ─── */}
+            <div style={{
+                padding: '16px 20px 12px',
+                display: 'flex', alignItems: 'center', gap: '12px',
+                background: 'white',
+                borderBottom: '1px solid rgba(0,0,0,0.04)',
+                flexShrink: 0,
+            }}>
+                <div
+                    onClick={() => onNavigate('profile')}
+                    style={{
+                        width: '42px', height: '42px', borderRadius: '14px',
+                        background: 'linear-gradient(135deg, var(--primary), #6366F1)',
+                        color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer',
+                        boxShadow: '0 4px 12px -4px rgba(74,108,247,0.3)',
+                        letterSpacing: '-0.02em',
+                    }}
+                >
                     {userInitials}
                 </div>
                 <div style={{ flex: 1 }}>
-                    <h2 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Hello, {userName}</h2>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0 }}>How are you feeling?</p>
+                    <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: '0 0 1px', fontWeight: '400' }}>{getGreeting()}</p>
+                    <h2 style={{ fontSize: '1.05rem', fontWeight: '700', margin: 0, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>{userName} 👋</h2>
                 </div>
-                <button className="flex-center" style={{ background: 'white', border: '1px solid var(--border)', borderRadius: '12px', width: '40px', height: '40px', color: 'var(--text-muted)' }}>
-                    <IconBell size={20} />
-                </button>
-            </div>
-
-            <main className="scroll-content" style={{ padding: '0 20px 120px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
-
-                {/* Dual ABHA/Pass Strip - Eka Care Style */}
-                <div className="animate-fade" style={{
-                    marginTop: '8px',
-                    background: 'white', borderRadius: '24px', padding: '16px',
-                    border: '1px solid #EEF2FF', display: 'grid', gridTemplateColumns: '1fr 1fr',
-                    gap: '1px', boxShadow: '0 4px 12px rgba(80, 66, 189, 0.05)',
-                    position: 'relative', overflow: 'hidden'
-                }}>
-                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', height: '60%', width: '1px', background: '#F1F5F9' }}></div>
-
-                    <div onClick={() => onNavigate('profile')} className="clickable" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px' }}>
-                        <div className="flex-center" style={{ width: '36px', height: '36px', background: 'var(--primary-subtle)', borderRadius: '12px', color: 'var(--primary)' }}>
-                            <IconShieldCheck size={20} />
-                        </div>
-                        <div>
-                            <h4 style={{ fontSize: '0.75rem', fontWeight: '800', margin: 0, color: 'var(--text-secondary)' }}>Medics Pass ›</h4>
-                            <p style={{ fontSize: '0.7rem', color: 'var(--primary)', margin: 0, fontWeight: '800' }}>Buy now</p>
-                        </div>
-                    </div>
-
-                    <div onClick={() => onNavigate('profile')} className="clickable" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px', justifyContent: 'flex-end' }}>
-                        <div style={{ textAlign: 'right' }}>
-                            <h4 style={{ fontSize: '0.75rem', fontWeight: '800', margin: 0, color: 'var(--text-secondary)' }}>ABHA ID ›</h4>
-                            <p style={{ fontSize: '0.7rem', color: 'var(--primary)', margin: 0, fontWeight: '800' }}>Create Now</p>
-                        </div>
-                        <div className="flex-center" style={{ width: '36px', height: '36px', background: 'var(--primary-subtle)', borderRadius: '12px', color: 'var(--primary)' }}>
-                            <IconRecords size={20} />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Recently Tracked Section */}
-                <div style={{ marginTop: '4px' }}>
-                    <div className="flex-between" style={{ marginBottom: '16px', paddingLeft: '4px' }}>
-                        <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--premium-dark)' }}>Recently tracked</h3>
-                        <span
-                            onClick={() => onNavigate('records')}
-                            style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: '700', cursor: 'pointer' }}
-                        >
-                            HISTORY {!isPremium && '👑'} ›
-                        </span>
-                    </div>
-
-                    <div className="scroll-snap-x hide-scrollbar" style={{ padding: '4px 2px', gap: '12px' }}>
-                        <div className="stat-card-premium scroll-card" style={{ minWidth: '135px' }}>
-                            <div className="stat-icon-wrapper" style={{ background: '#FEE2E2', color: '#EF4444' }}>
-                                <IconHeart />
-                            </div>
-                            <span style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--text-muted)' }}>HEART RATE</span>
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                <span style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-main)' }}>{vitals.heart_rate?.value || '--'}</span>
-                                <span style={{ fontSize: '0.65rem', fontWeight: '700', opacity: 0.7 }}>BPM</span>
-                            </div>
-                        </div>
-
-                        <div className="stat-card-premium scroll-card" style={{ minWidth: '135px' }}>
-                            <div className="stat-icon-wrapper" style={{ background: '#DBEAFE', color: '#2563EB' }}>
-                                <IconThermometer size={18} />
-                            </div>
-                            <span style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--text-muted)' }}>TEMPERATURE</span>
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                <span style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-main)' }}>{vitals.temp?.value || '--'}</span>
-                                <span style={{ fontSize: '0.65rem', fontWeight: '700', opacity: 0.7 }}>°F</span>
-                            </div>
-                        </div>
-
-                        <div className="stat-card-premium scroll-card" style={{ minWidth: '135px' }}>
-                            <div className="stat-icon-wrapper" style={{ background: '#DCFCE7', color: '#10B981' }}>
-                                <IconFlask size={18} />
-                            </div>
-                            <span style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--text-muted)' }}>BLOOD SUGAR</span>
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                                <span style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-main)' }}>{vitals.blood_sugar?.value || '--'}</span>
-                                <span style={{ fontSize: '0.65rem', fontWeight: '700', opacity: 0.7 }}>mg/dL</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Scan Records Banner - Eka Signature */}
-                <div style={{ margin: '8px 0' }}>
-                    <div onClick={() => fileInputRef.current.click()} className="health-id-card animate-fade" style={{
-                        display: 'flex', alignItems: 'center',
-                        gap: '20px', padding: '20px', cursor: 'pointer', border: 'none',
-                        position: 'relative', overflow: 'hidden', boxShadow: '0 8px 24px rgba(80, 66, 189, 0.25)'
-                    }}>
-                        <div className="holographic-glow" />
-                        <div className="flex-center" style={{ width: '48px', height: '48px', background: 'rgba(255,255,255,0.2)', borderRadius: '14px', color: 'white' }}>
-                            <IconScan />
-                        </div>
-                        <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>
-                            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0, color: 'white' }}>Scan Records</h4>
-                            <p style={{ fontSize: '0.75rem', opacity: 0.9, margin: '2px 0 0', color: 'white' }}>Save reports for AI health analysis</p>
-                        </div>
-                        <IconSparkles />
-                    </div>
-                </div>
-
-                {/* Modules Grid */}
-                <section style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                    <div onClick={() => handleFeatureClick('records')} className="stat-card-premium animate-fade" style={{ background: 'white', alignItems: 'flex-start', padding: '20px' }}>
-                        <div className="stat-icon-wrapper" style={{ background: '#EEF2FF', color: '#4F46E5' }}>
-                            <IconRecords />
-                        </div>
-                        <div>
-                            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Records</h4>
-                            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>Latest: Lab Report</p>
-                        </div>
-                    </div>
-
-                    <div onClick={() => handleFeatureClick('bot')} className="stat-card-premium animate-fade" style={{ background: 'white', alignItems: 'flex-start', padding: '20px', position: 'relative' }}>
-                        {!isPremium && <span style={{ position: 'absolute', top: '12px', right: '12px', fontSize: '0.8rem' }}>👑</span>}
-                        <div className="stat-icon-wrapper" style={{ background: '#FDF2F8', color: '#DB2777' }}>
-                            <IconBot />
-                        </div>
-                        <div>
-                            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Dr. Coach</h4>
-                            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>Ask AI Assistant</p>
-                        </div>
-                    </div>
-
-                    <div onClick={() => onNavigate('insurance')} className="stat-card-premium animate-fade" style={{ background: 'white', alignItems: 'flex-start', padding: '20px' }}>
-                        <div className="stat-icon-wrapper" style={{ background: '#FFF7ED', color: '#EA580C' }}>
-                            <IconInsurance />
-                        </div>
-                        <div>
-                            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Insurance</h4>
-                            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>Policy Insights</p>
-                        </div>
-                    </div>
-
-                    <div onClick={() => onNavigate('records')} className="stat-card-premium animate-fade" style={{ background: 'white', alignItems: 'flex-start', padding: '20px' }}>
-                        <div className="stat-icon-wrapper" style={{ background: '#F0F9FF', color: '#0284C7' }}>
-                            <IconMedicine />
-                        </div>
-                        <div>
-                            <h4 style={{ fontSize: '0.95rem', fontWeight: '800', margin: 0 }}>Medicines</h4>
-                            <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>2 Due Today</p>
-                        </div>
-                    </div>
-                </section>
-
-                <div id="medication-section" style={{ marginTop: '4px' }}>
-                    <div className="flex-between" style={{ marginBottom: '16px', paddingLeft: '4px' }}>
-                        <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--premium-dark)' }}>Daily Medications</h3>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    {cartItems.length > 0 && (
                         <button
-                            onClick={() => handleFeatureClick('records')}
-                            className="flex-center"
+                            onClick={onShowCart}
                             style={{
-                                width: '32px', height: '32px', borderRadius: '10px',
-                                background: 'var(--primary-subtle)', border: 'none', color: 'var(--primary)'
+                                width: '38px', height: '38px', borderRadius: '12px',
+                                background: 'var(--primary)', border: 'none',
+                                color: 'white', position: 'relative', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
                             }}
                         >
-                            <IconPlus size={18} />
+                            <IconRecords size={18} />
+                            <div style={{
+                                position: 'absolute', top: '-4px', right: '-4px',
+                                background: '#EF4444', color: 'white', borderRadius: '50%',
+                                width: '18px', height: '18px', fontSize: '0.6rem', fontWeight: '700',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                border: '2px solid white',
+                            }}>
+                                {cartItems.length}
+                            </div>
                         </button>
+                    )}
+                    <button
+                        onClick={() => setShowNotifications(true)}
+                        style={{
+                            width: '38px', height: '38px', borderRadius: '12px',
+                            background: '#F3F4F6', border: 'none',
+                            color: 'var(--text-secondary)', position: 'relative', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}
+                    >
+                        <IconBell size={19} />
+                        {notifications.some(n => !n.is_read) && (
+                            <div style={{
+                                position: 'absolute', top: '8px', right: '8px',
+                                width: '8px', height: '8px', background: '#EF4444',
+                                borderRadius: '50%', border: '2px solid #F3F4F6',
+                            }} />
+                        )}
+                    </button>
+                </div>
+            </div>
+
+            <main className="scroll-content hide-scrollbar" style={{ padding: '20px 20px 100px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+                {/* ─── Scan Records CTA ─── */}
+                <div
+                    onClick={() => onNavigate('scanner')}
+                    style={{
+                        background: 'linear-gradient(135deg, var(--primary) 0%, #3B5BDB 50%, #6366F1 100%)',
+                        borderRadius: '20px',
+                        padding: '24px 20px',
+                        minHeight: '80px',
+                        cursor: 'pointer',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        boxShadow: '0 8px 24px -8px rgba(74,108,247,0.35)',
+                    }}
+                >
+                    {/* Decorative circles */}
+                    <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+                    <div style={{ position: 'absolute', bottom: '-30px', left: '30%', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative', zIndex: 1 }}>
+                        <div style={{
+                            width: '48px', height: '48px', borderRadius: '14px',
+                            background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(8px)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            border: '1px solid rgba(255,255,255,0.15)',
+                        }}>
+                            <ScanIcon />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <h4 style={{ fontSize: '0.95rem', fontWeight: '600', margin: 0, color: 'white' }}>
+                                {t.scanAnalyze}
+                            </h4>
+                            <p style={{ fontSize: '0.78rem', opacity: 0.85, margin: '3px 0 0', color: 'white', fontWeight: '400' }}>
+                                {t.scanSubtitle}
+                            </p>
+                        </div>
+                        <div style={{
+                            width: '32px', height: '32px', borderRadius: '10px',
+                            background: 'rgba(255,255,255,0.15)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                            <SparkIcon />
+                        </div>
                     </div>
-                    <MedicationReminders
-                        isPremium={user?.subscription?.tier === 'premium'}
-                        onUpgrade={() => onNavigate('subscription')}
-                    />
                 </div>
 
-                <HealthTrackers onAddVital={handleAddVital} />
+                {/* ─── Vitals Summary ─── */}
+                <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', padding: '0 2px' }}>
+                        <h3 style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--text-main)', margin: 0 }}>{t.healthSummary}</h3>
+                        <button onClick={() => onNavigate('explore')} style={{
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            fontSize: '0.78rem', color: 'var(--primary)', fontWeight: '500',
+                            display: 'flex', alignItems: 'center', gap: '2px',
+                        }}>
+                            {t.viewAll} <ChevronRightSmall />
+                        </button>
+                    </div>
+
+                    <div style={{
+                        display: 'flex', gap: '10px', overflowX: 'auto',
+                        scrollbarWidth: 'none', padding: '2px 0 4px',
+                    }}>
+                        {[
+                            { label: t.heartRate, value: vitals.heart_rate?.value || '--', unit: 'BPM', color: '#EF4444', bg: '#FEF2F2', icon: <IconHeart size={16} />, path: 'heartrate' },
+                            { label: t.temperature, value: vitals.temp?.value || '--', unit: '°F', color: '#3B82F6', bg: '#EFF6FF', icon: <IconThermometer size={16} />, path: null },
+                            { label: t.bloodSugar, value: vitals.blood_sugar?.value || '--', unit: 'mg/dL', color: '#8B5CF6', bg: '#F5F3FF', icon: <IconFlask size={16} />, path: null },
+                        ].map((v, i) => (
+                            <div
+                                key={i}
+                                onClick={() => v.path && onNavigate(v.path)}
+                                style={{
+                                    minWidth: '140px', flex: '0 0 auto',
+                                    background: 'white', borderRadius: '18px',
+                                    padding: '16px 14px',
+                                    border: '1px solid rgba(0,0,0,0.04)',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                                    cursor: v.path ? 'pointer' : 'default',
+                                    transition: 'all 0.2s',
+                                }}
+                            >
+                                <div style={{
+                                    width: '34px', height: '34px', borderRadius: '10px',
+                                    background: v.bg, color: v.color,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    marginBottom: '10px',
+                                }}>
+                                    {v.icon}
+                                </div>
+                                <p style={{ fontSize: '0.65rem', fontWeight: '500', color: 'var(--text-muted)', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{v.label}</p>
+                                <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
+                                    <span style={{ fontSize: '1.3rem', fontWeight: '700', color: 'var(--text-main)' }}>{v.value}</span>
+                                    <span style={{ fontSize: '0.65rem', fontWeight: '400', color: 'var(--text-muted)' }}>{v.unit}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* ─── Quick Actions Grid ─── */}
+                <div>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--text-main)', margin: '0 0 14px 2px' }}>{t.quickActions}</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                        {quickActions.map((item, i) => (
+                            <button
+                                key={i}
+                                onClick={() => handleFeatureClick(item.path)}
+                                style={{
+                                    background: 'white',
+                                    borderRadius: '18px',
+                                    padding: '18px 12px 16px',
+                                    border: '1px solid rgba(0,0,0,0.04)',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                                    cursor: 'pointer',
+                                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                                    gap: '8px',
+                                    transition: 'all 0.2s',
+                                    textAlign: 'center',
+                                }}
+                            >
+                                <div style={{
+                                    width: '42px', height: '42px', borderRadius: '13px',
+                                    background: item.bg, color: item.color,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                }}>
+                                    {item.icon}
+                                </div>
+                                <div>
+                                    <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--text-main)', display: 'block' }}>{item.label}</span>
+                                    <span style={{ fontSize: '0.65rem', fontWeight: '400', color: 'var(--text-muted)', display: 'block', marginTop: '1px' }}>{item.sub}</span>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+
+
+                {/* ─── Health Trackers ─── */}
+                <HealthTrackers onAddVital={handleAddVital} onNavigate={onNavigate} />
 
             </main>
 
             <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} accept="image/*,application/pdf" />
 
-            <BottomNavigation
-                activeTab="home"
-                onNavigate={onNavigate}
-            />
+            <BottomNavigation activeTab="home" onNavigate={onNavigate} />
 
+            {/* ─── Health Bot Modal ─── */}
             {showBot && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2000,
-                    background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)',
-                    display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'
-                }}>
-                    <div style={{ height: '94vh', background: 'white', borderRadius: '32px 32px 0 0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }} className="animate-fade">
+                <div
+                    onClick={() => setShowBot(false)}
+                    style={{
+                        position: 'fixed', inset: 0, zIndex: 2000,
+                        background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)',
+                        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end'
+                    }}
+                >
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            height: '94vh', background: 'white',
+                            borderRadius: '20px 20px 0 0', overflow: 'hidden',
+                            display: 'flex', flexDirection: 'column', position: 'relative',
+                        }}
+                    >
+
                         <div style={{ padding: '12px', display: 'flex', justifyContent: 'center' }} onClick={() => setShowBot(false)}>
-                            <div style={{ width: '40px', height: '4px', background: 'var(--border)', borderRadius: '2px' }} />
+                            <div style={{ width: '36px', height: '4px', background: '#E5E7EB', borderRadius: '2px', cursor: 'pointer' }} />
                         </div>
-                        <div style={{ flex: 1, padding: '0 20px 20px', display: 'flex', flexDirection: 'column' }}>
-                            <div className="flex-between" style={{ padding: '8px 0 16px' }}>
-                                <h3 style={{ fontSize: '1.2rem', fontWeight: '800' }}>HealthBot AI</h3>
-                                <button onClick={() => setShowBot(false)} className="btn btn-ghost" style={{ padding: '4px 12px', fontSize: '0.8rem' }}>Close</button>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+                            <HealthBot onNavigate={onNavigate} onClose={() => setShowBot(false)} />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ─── Notifications Panel ─── */}
+            {showNotifications && (
+                <div style={{
+                    position: 'fixed', inset: 0, zIndex: 2000,
+                    background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)',
+                    display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+                }}>
+                    <div style={{
+                        height: '80vh', background: '#FAFBFC',
+                        borderRadius: '20px 20px 0 0', overflow: 'hidden',
+                        display: 'flex', flexDirection: 'column',
+                    }}>
+                        <div style={{ padding: '12px', display: 'flex', justifyContent: 'center' }} onClick={() => setShowNotifications(false)}>
+                            <div style={{ width: '36px', height: '4px', background: '#E5E7EB', borderRadius: '2px', cursor: 'pointer' }} />
+                        </div>
+                        <div style={{ flex: 1, padding: '0 20px 24px', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+                            <div style={{
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                padding: '4px 0 16px', borderBottom: '1px solid #F3F4F6', marginBottom: '16px',
+                            }}>
+                                <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--text-main)', margin: 0 }}>{t.notifications}</h3>
+                                <button
+                                    onClick={() => setShowNotifications(false)}
+                                    style={{
+                                        background: 'none', border: 'none', cursor: 'pointer',
+                                        fontSize: '0.85rem', fontWeight: '600', color: 'var(--primary)',
+                                    }}
+                                >Done</button>
                             </div>
-                            <div style={{ flex: 1 }}>
-                                <HealthBot />
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {notifications.length === 0 ? (
+                                    <div style={{
+                                        display: 'flex', flexDirection: 'column', alignItems: 'center',
+                                        justifyContent: 'center', height: '300px', opacity: 0.4,
+                                    }}>
+                                        <IconBell size={44} />
+                                        <p style={{ marginTop: '12px', fontWeight: '500', fontSize: '0.9rem' }}>{t.noNotifications}</p>
+                                    </div>
+                                ) : (
+                                    notifications.map(n => (
+                                        <div
+                                            key={n._id}
+                                            onClick={() => markNotificationAsRead(n._id)}
+                                            style={{
+                                                padding: '14px 16px', borderRadius: '16px', background: 'white',
+                                                border: '1px solid rgba(0,0,0,0.04)',
+                                                display: 'flex', gap: '12px',
+                                                position: 'relative', cursor: 'pointer',
+                                                boxShadow: n.is_read ? 'none' : '0 1px 4px rgba(0,0,0,0.04)',
+                                                opacity: n.is_read ? 0.6 : 1,
+                                                transition: 'all 0.2s',
+                                            }}
+                                        >
+                                            {!n.is_read && (
+                                                <div style={{ position: 'absolute', top: '16px', right: '16px', width: '7px', height: '7px', background: 'var(--primary)', borderRadius: '50%' }} />
+                                            )}
+                                            <div style={{
+                                                width: '38px', height: '38px', borderRadius: '12px',
+                                                background: n.type === 'reminder' ? '#FEF3C7' : (n.type === 'premium' ? '#EEF2FF' : '#F3F4F6'),
+                                                color: n.type === 'reminder' ? '#D97706' : (n.type === 'premium' ? 'var(--primary)' : '#64748B'),
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                flexShrink: 0,
+                                            }}>
+                                                {n.type === 'reminder' ? <IconActivity size={16} /> : (n.type === 'premium' ? <IconSparkles size={16} /> : <IconBell size={16} />)}
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <h4 style={{ fontSize: '0.88rem', fontWeight: '600', margin: '0 0 2px', color: 'var(--text-main)' }}>{n.title}</h4>
+                                                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4', fontWeight: '400' }}>{n.message}</p>
+                                                <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '4px', display: 'block', fontWeight: '400' }}>
+                                                    {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            <PremiumModal
-                isOpen={showPremiumModal}
-                onClose={() => setShowPremiumModal(false)}
-                onUpgrade={() => onNavigate('subscription')}
-            />
         </div>
     );
 };
