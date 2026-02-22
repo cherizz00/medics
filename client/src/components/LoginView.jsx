@@ -112,7 +112,7 @@ const LoginView = ({ onLogin, onNavigate }) => {
     useEffect(() => {
         // Initialize Google Auth for web support
         GoogleAuth.initialize({
-            clientId: '314931315613-g3p5443480j10brl9ljt8qej18kc36qe.apps.googleusercontent.com',
+            clientId: '366925712525-ug8iunglghg6aa9cm8cncekg8b693u2o.apps.googleusercontent.com',
             scopes: ['profile', 'email'],
             grantOfflineAccess: true,
         }).catch(err => console.warn('GoogleAuth initialization warning:', err));
