@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IconChevronLeft } from './Icons';
 import BottomNavigation from './common/BottomNavigation';
 
-/* ═══════════════════════════════════════
-   ICONS
-   ═══════════════════════════════════════ */
+
 const PlusIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
         <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -28,9 +26,7 @@ const EditIcon = () => (
     </svg>
 );
 
-/* ═══════════════════════════════════════
-   CONSTANTS
-   ═══════════════════════════════════════ */
+
 const FREQUENCIES = ['Once daily', 'Twice daily', '3× daily', 'Weekly', 'As needed'];
 
 const MED_TYPES = [
@@ -55,9 +51,7 @@ const TIME_SLOTS = [
 
 const ACCENT_COLORS = ['#6366F1', '#10B981', '#F59E0B', '#EC4899', '#0EA5E9', '#8B5CF6', '#EF4444', '#14B8A6'];
 
-/* ═══════════════════════════════════════
-   CSS-IN-JS KEYFRAMES (injected once)
-   ═══════════════════════════════════════ */
+
 const STYLE_TAG_ID = 'med-reminder-styles';
 const injectStyles = () => {
     if (document.getElementById(STYLE_TAG_ID)) return;
@@ -79,9 +73,7 @@ const injectStyles = () => {
     document.head.appendChild(style);
 };
 
-/* ═══════════════════════════════════════
-   PROGRESS RING
-   ═══════════════════════════════════════ */
+
 const ProgressRing = ({ pct, taken, total }) => {
     const r = 38, c = 2 * Math.PI * r;
     const offset = c - (pct / 100) * c;
@@ -107,9 +99,7 @@ const ProgressRing = ({ pct, taken, total }) => {
     );
 };
 
-/* ═══════════════════════════════════════
-   DAY SELECTOR
-   ═══════════════════════════════════════ */
+
 const DaySelector = () => {
     const days = [];
     const now = new Date();
@@ -152,9 +142,7 @@ const DaySelector = () => {
     );
 };
 
-/* ═══════════════════════════════════════
-   MEDICINE CARD (Timeline)
-   ═══════════════════════════════════════ */
+
 const MedCard = ({ med, slotId, taken, onToggle, getEmoji }) => (
     <div
         className="med-card-enter"
@@ -226,9 +214,7 @@ const MedCard = ({ med, slotId, taken, onToggle, getEmoji }) => (
 );
 
 
-/* ═══════════════════════════════════════
-   MAIN COMPONENT
-   ═══════════════════════════════════════ */
+
 const MedicineReminderView = ({ onBack, onNavigate }) => {
     useEffect(() => injectStyles(), []);
 
@@ -306,7 +292,7 @@ const MedicineReminderView = ({ onBack, onNavigate }) => {
     const activeSlots = TIME_SLOTS.filter(s => getMedsBySlot(s.id).length > 0);
     const getTypeEmoji = (type) => MED_TYPES.find(t => t.id === type)?.emoji || '💊';
 
-    /* ─── Motivational message ─── */
+
     const getMotivation = () => {
         if (totalDoses === 0) return "Add your first medicine to get started!";
         if (progressPct === 100) return "Perfect! All medications taken today 🌟";
@@ -319,7 +305,6 @@ const MedicineReminderView = ({ onBack, onNavigate }) => {
     return (
         <div className="page-container" style={{ background: '#F5F6FA' }}>
 
-            {/* ═══ HEADER ═══ */}
             <div style={{
                 background: 'linear-gradient(160deg, #3730A3 0%, #6366F1 40%, #818CF8 80%, #A5B4FC 100%)',
                 padding: '16px 20px 22px', flexShrink: 0,
@@ -398,10 +383,8 @@ const MedicineReminderView = ({ onBack, onNavigate }) => {
                 </div>
             </div>
 
-            {/* ═══ DAY SELECTOR ═══ */}
             <DaySelector />
 
-            {/* ═══ VIEW TOGGLE ═══ */}
             <div style={{
                 display: 'flex', gap: '3px', margin: '6px 20px 10px',
                 background: '#ECEDF2', borderRadius: '12px', padding: '3px',
@@ -423,7 +406,6 @@ const MedicineReminderView = ({ onBack, onNavigate }) => {
                 ))}
             </div>
 
-            {/* ═══ MAIN CONTENT ═══ */}
             <main className="scroll-content hide-scrollbar" style={{ padding: '4px 20px 100px' }}>
 
                 {/* Empty State */}
@@ -459,7 +441,6 @@ const MedicineReminderView = ({ onBack, onNavigate }) => {
                     </div>
                 )}
 
-                {/* ═══ TIMELINE VIEW ═══ */}
                 {viewMode === 'timeline' && medicines.length > 0 && (
                     <div style={{ marginTop: '8px' }}>
                         {activeSlots.map((slot, idx) => {
@@ -540,7 +521,6 @@ const MedicineReminderView = ({ onBack, onNavigate }) => {
                     </div>
                 )}
 
-                {/* ═══ LIST VIEW ═══ */}
                 {viewMode === 'list' && medicines.length > 0 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
                         {medicines.map((med, i) => {
@@ -661,7 +641,6 @@ const MedicineReminderView = ({ onBack, onNavigate }) => {
                 )}
             </main>
 
-            {/* ═══ ADD / EDIT MODAL ═══ */}
             {showAdd && (
                 <div className="med-modal-bg" style={{
                     position: 'fixed', inset: 0, zIndex: 2000,

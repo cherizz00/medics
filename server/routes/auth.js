@@ -8,17 +8,17 @@ const crypto = require('crypto');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 
-// Mock Twilio Setup (Replace with env vars for real usage)
+
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = accountSid && authToken ? new twilio(accountSid, authToken) : null;
 
-// Google Auth Setup
+
 const { OAuth2Client } = require('google-auth-library');
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 
-// --- Helper: Send OTP ---
+
 async function sendSMS(phone, otp) {
     if (client) {
         try {
@@ -33,14 +33,13 @@ async function sendSMS(phone, otp) {
             return false;
         }
     } else {
-        // DEV MODE: Log to console
+
         console.log(`[DEV MODE] OTP for ${phone}: ${otp}`);
         return true;
     }
 }
 
-// @route POST /api/auth/send-otp
-// @desc Generate and send OTP
+
 router.post('/send-otp', async (req, res) => {
     try {
         const { phoneNumber } = req.body;
@@ -64,8 +63,7 @@ router.post('/send-otp', async (req, res) => {
     }
 });
 
-// @route POST /api/auth/verify-otp
-// @desc Verify OTP and Login/Register
+
 router.post('/verify-otp', async (req, res) => {
     try {
         const { phoneNumber, otp } = req.body;
@@ -102,6 +100,7 @@ router.post('/verify-otp', async (req, res) => {
                 id: user._id,
                 name: user.name,
                 phoneNumber: user.phoneNumber,
+                email: user.email,
                 profile: user.profile
             },
             isNewUser
@@ -113,8 +112,7 @@ router.post('/verify-otp', async (req, res) => {
     }
 });
 
-// @route POST /api/auth/google
-// @desc Verify Google ID Token
+
 router.post('/google', async (req, res) => {
     try {
         const { token } = req.body;
@@ -151,16 +149,30 @@ router.post('/google', async (req, res) => {
 
         // Find or Create User
         let user = await User.findOne({ googleId });
+
         if (!user) {
-            // Check if user exists with same email (if we had email field, but we mostly use phone)
-            // For now, just create new google user
-            user = new User({
-                name,
-                googleId,
-                email, // Add email to schema if not exists
-                auth_provider: 'google',
-                profile: { avatar_url: picture }
-            });
+            // Check for existing user with same email
+            user = await User.findOne({ email: email.toLowerCase() });
+
+            if (user) {
+                // Link Google to existing account
+                user.googleId = googleId;
+                if (!user.profile.avatar_url) user.profile.avatar_url = picture;
+                await user.save();
+            } else {
+                // Create new Google user
+                user = new User({
+                    name,
+                    googleId,
+                    email: email.toLowerCase(),
+                    auth_provider: 'google',
+                    profile: { avatar_url: picture }
+                });
+                await user.save();
+            }
+        } else if (picture && user.profile.avatar_url !== picture) {
+            // Update avatar if changed
+            user.profile.avatar_url = picture;
             await user.save();
         }
 
@@ -183,8 +195,7 @@ router.post('/google', async (req, res) => {
     }
 });
 
-// @route POST /api/auth/register-password
-// @desc Create a new user with email and password
+
 router.post('/register-password', async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -225,8 +236,7 @@ router.post('/register-password', async (req, res) => {
     }
 });
 
-// @route POST /api/auth/login-password
-// @desc Verify credentials and login
+
 router.post('/login-password', async (req, res) => {
     try {
         const { email, password } = req.body;

@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { IconPhone, IconLock, IconGoogle, IconFacebook, IconApple, IconLogo, IconSparkles, IconChevronLeft } from './Icons';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { useLanguage } from '../LanguageContext';
 import translations from '../translations';
 
 
 
-/* ─── Custom Language Picker ─── */
+
 const LanguagePicker = ({ language, setLanguage }) => {
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
@@ -112,10 +113,17 @@ const LoginView = ({ onLogin, onNavigate }) => {
         setIsLoading(true);
         setError('');
         try {
+            // First initialize/initialize sign in
+            const googleUser = await GoogleAuth.signIn();
+
+            if (!googleUser || !googleUser.authentication.idToken) {
+                throw new Error('Google Sign-In failed to return an ID Token');
+            }
+
             const response = await fetch('/api/auth/google', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token: 'mock-google-token' }),
+                body: JSON.stringify({ token: googleUser.authentication.idToken }),
             });
             const data = await response.json();
             if (response.ok) {
@@ -126,7 +134,8 @@ const LoginView = ({ onLogin, onNavigate }) => {
                 setError(data.message || 'Google Login Failed');
             }
         } catch (err) {
-            setError(`Connection Error: ${err.message}`);
+            console.error('Google Auth Error:', err);
+            setError(`Google Error: ${err.message || 'Authentication cancelled or failed'}`);
         } finally {
             setIsLoading(false);
         }

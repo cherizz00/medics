@@ -22,7 +22,13 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: false // Made optional for future OTP/Social login
+        required: false
+    },
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true,
+        trim: true
     },
     auth_provider: {
         type: String,
@@ -33,8 +39,8 @@ const userSchema = new mongoose.Schema({
         dob: Date,
         gender: { type: String, enum: ['male', 'female', 'other'] },
         blood_group: String,
-        height: Number, // in cm
-        weight: Number, // in kg
+        height: Number,
+        weight: Number,
         avatar_url: String
     },
     subscription: {

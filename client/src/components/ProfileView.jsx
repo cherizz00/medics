@@ -4,7 +4,7 @@ import BottomNavigation from './common/BottomNavigation';
 import { useLanguage } from '../LanguageContext';
 import translations from '../translations';
 
-/* ─── Inline Icons ─── */
+
 const ChevronIcon = () => (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M7 5l4 4-4 4" /></svg>
 );
@@ -45,7 +45,7 @@ const MessageIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
 );
 
-/* ─── Menu Row Component ─── */
+
 const MenuRow = ({ icon, label, subtitle, onClick, color = 'var(--primary)', danger = false }) => (
     <button
         onClick={onClick}
@@ -76,7 +76,7 @@ const MenuRow = ({ icon, label, subtitle, onClick, color = 'var(--primary)', dan
     </button>
 );
 
-/* ─── Section Card ─── */
+
 const SectionCard = ({ title, children }) => (
     <div style={{ marginBottom: '24px' }}>
         {title && <h4 style={{
@@ -296,7 +296,6 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [], famil
         <div className="page-container" style={{ background: '#F7F8FA' }}>
             <main className="scroll-content hide-scrollbar" style={{ padding: '0 20px 100px' }}>
 
-                {/* ─── Header ─── */}
                 <div style={{
                     padding: '16px 0 0',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -322,7 +321,6 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [], famil
                     </button>
                 </div>
 
-                {/* ─── Profile Card ─── */}
                 <div style={{
                     margin: '20px 0 28px',
                     background: 'white',
@@ -438,7 +436,6 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [], famil
                     </div>
                 </div>
 
-                {/* ─── Quick Stats ─── */}
                 <div style={{
                     display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px',
                     marginBottom: '28px',
@@ -474,7 +471,6 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [], famil
                     ))}
                 </div>
 
-                {/* ─── Family Members ─── */}
                 <div style={{ marginBottom: '28px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', padding: '0 4px' }}>
                         <h4 style={{ fontSize: '0.68rem', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>{t.familyMembers}</h4>
@@ -539,7 +535,6 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [], famil
                     </div>
                 </div>
 
-                {/* ─── Medical Services ─── */}
                 <SectionCard title={t.healthServices}>
                     <MenuRow icon={<FolderIcon />} label={t.myRecords} subtitle={t.myRecordsSub} onClick={() => onNavigate('records')} />
                     <MenuRow icon={<PillIcon />} label="Medications" subtitle="Prescriptions & reminders" onClick={() => onNavigate('medicine-reminder')} color="#10B981" />
@@ -547,20 +542,17 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [], famil
                     <MenuRow icon={<HeartIcon />} label={t.consultDoctor} subtitle={t.consultDoctorSub} onClick={() => onNavigate('consultancy')} color="#EC4899" />
                 </SectionCard>
 
-                {/* ─── Security & Privacy ─── */}
                 <SectionCard title={t.securityPrivacy}>
                     <MenuRow icon={<ShieldIcon />} label={t.securitySettings} subtitle={t.securitySettingsSub} onClick={() => onNavigate('security')} color="#6366F1" />
                     <MenuRow icon={<UsersIcon />} label={t.sharedAccess} subtitle={t.sharedAccessSub} onClick={() => onNavigate('shared')} color="#8B5CF6" />
                     <MenuRow icon={<IconStorage />} label={t.storageUsage} subtitle={t.storageUsageSub} onClick={() => onNavigate('storage')} color="#64748B" />
                 </SectionCard>
 
-                {/* ─── Support ─── */}
                 <SectionCard title={t.support}>
                     <MenuRow icon={<MessageIcon />} label={t.sendFeedback} subtitle={t.sendFeedbackSub} onClick={() => setShowFeedback(true)} color="#0EA5E9" />
                     <MenuRow icon={<HelpIcon />} label={t.faqHelp} subtitle={t.faqHelpSub} onClick={() => onNavigate('faq')} color="#14B8A6" />
                 </SectionCard>
 
-                {/* ─── Danger Zone ─── */}
                 <div style={{ marginBottom: '24px' }}>
                     <div style={{
                         background: 'white', borderRadius: '18px',
@@ -573,7 +565,6 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [], famil
                     </div>
                 </div>
 
-                {/* ─── App Version ─── */}
                 <p style={{
                     textAlign: 'center', fontSize: '0.72rem', color: 'var(--text-muted)',
                     margin: '0 0 16px', fontWeight: '400', opacity: 0.6,
@@ -584,7 +575,6 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [], famil
 
             <BottomNavigation activeTab="profile" onNavigate={onNavigate} />
 
-            {/* ─── Add Family Modal ─── */}
             {showAddModal && (
                 <div style={{
                     position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
@@ -639,7 +629,6 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [], famil
                 </div>
             )}
 
-            {/* ─── Edit Profile Modal ─── */}
             {showEditModal && (
                 <div style={{
                     position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
@@ -753,7 +742,6 @@ const ProfileView = ({ onBack, onNavigate, onLogout, user, documents = [], famil
                 </div>
             )}
 
-            {/* ─── Feedback Modal ─── */}
             {showFeedback && (
                 <div style={{
                     position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',

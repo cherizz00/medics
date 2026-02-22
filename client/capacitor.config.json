@@ -1,5 +1,15 @@
 {
   "appId": "com.medics.app",
   "appName": "Medics",
-  "webDir": "dist"
+  "webDir": "dist",
+  "plugins": {
+    "GoogleAuth": {
+      "scopes": [
+        "profile",
+        "email"
+      ],
+      "serverClientId": "314931315613-g3p5443480j10brl9ljt8qej18kc36qe.apps.googleusercontent.com",
+      "forceCodeForRefreshToken": true
+    }
+  }
 }

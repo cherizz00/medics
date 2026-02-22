@@ -14,7 +14,7 @@ import HealthTrackers from './HealthTrackers';
 import StoryViewer from './StoryViewer';
 import HealthBot from './HealthBot';
 
-/* ─── Inline SVG Icons ─── */
+
 const ScanIcon = () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V4h3" /><path d="M20 7V4h-3" /><path d="M4 17v3h3" /><path d="M20 17v3h-3" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
 );
@@ -167,7 +167,7 @@ const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onR
     return (
         <div className="page-container" style={{ background: '#F7F8FA' }}>
 
-            {/* ─── Header ─── */}
+
             <div style={{
                 padding: '16px 20px 12px',
                 display: 'flex', alignItems: 'center', gap: '12px',
@@ -238,7 +238,6 @@ const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onR
 
             <main className="scroll-content hide-scrollbar" style={{ padding: '20px 20px 100px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
-                {/* ─── Scan Records CTA ─── */}
                 <div
                     onClick={() => onNavigate('scanner')}
                     style={{
@@ -283,7 +282,6 @@ const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onR
                     </div>
                 </div>
 
-                {/* ─── Vitals Summary ─── */}
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', padding: '0 2px' }}>
                         <h3 style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--text-main)', margin: 0 }}>{t.healthSummary}</h3>
@@ -336,7 +334,6 @@ const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onR
                     </div>
                 </div>
 
-                {/* ─── Quick Actions Grid ─── */}
                 <div>
                     <h3 style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--text-main)', margin: '0 0 14px 2px' }}>{t.quickActions}</h3>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
@@ -375,7 +372,6 @@ const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onR
 
 
 
-                {/* ─── Health Trackers ─── */}
                 <HealthTrackers onAddVital={handleAddVital} onNavigate={onNavigate} />
 
             </main>
@@ -384,7 +380,6 @@ const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onR
 
             <BottomNavigation activeTab="home" onNavigate={onNavigate} />
 
-            {/* ─── Health Bot Modal ─── */}
             {showBot && (
                 <div
                     onClick={() => setShowBot(false)}
@@ -413,7 +408,6 @@ const Dashboard = ({ onNavigate, documents, onAdd, user, familyMembers = [], onR
                 </div>
             )}
 
-            {/* ─── Notifications Panel ─── */}
             {showNotifications && (
                 <div style={{
                     position: 'fixed', inset: 0, zIndex: 2000,
